@@ -21,4 +21,11 @@ https://learn.microsoft.com/en-us/purview/unified-catalog-critical-data-elements
 
 
 
+https://learn.microsoft.com/en-us/purview/data-map-classification
+
+
+https://learn.microsoft.com/en-us/purview/unified-catalog-data-products-create-manage
+https://learn.microsoft.com/en-us/purview/unified-catalog-attributes-business-concept
+
+
 
