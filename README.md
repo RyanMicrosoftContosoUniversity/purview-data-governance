@@ -1,12 +1,12 @@
 # Purview Data Governance Field Guide
 
-This guide consolidates the key lessons from Labs 02	6 on designing, governing, and securing a Microsoft Purview implementation. Use it as a quick reference when shaping your data map, onboarding sources, curating assets, and publishing governed data products.
+This guide consolidates the key lessons on designing, governing, and securing a Microsoft Purview implementation. Use it as a quick reference when shaping your data map, onboarding sources, curating assets, and publishing governed data products.
 
 ![Purview Data Governance Overview](docs/images/purview-data-governance-overview.png)
 
 ## Designing the Purview Data Map
 
-- Model **platform domains** around business groupings	65	6 (e.g., business units, product lines). Purview ships with a default domain and supports up to four additional custom domains; give each clear ownership and avoid overlapping responsibilities.
+- Model **platform domains** around business groupings(e.g., business units, product lines). Purview ships with a default domain and supports up to four additional custom domains; give each clear ownership and avoid overlapping responsibilities.
 - Implement a **collections hierarchy** inside each domain to mirror teams, projects, or environments. RBAC assignments inherit down the tree, so design collections to minimise redundant permissions.
 - Build a **sensitivity label taxonomy** that aligns to compliance policies. Purview can auto-apply labels during scans based on information-type detections, but focus manual curation on high-risk data.
 - Enable **lineage connectors** (Data Factory, Synapse, SSIS, REST API) so stakeholders can trace sources, transformations, and downstream impact.
