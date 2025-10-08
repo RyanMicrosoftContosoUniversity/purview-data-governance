@@ -103,9 +103,9 @@ This guide consolidates the key lessons on designing, governing, and securing a 
 ## Setting up Purview Scanning App Registration for Fabric
 
 
-#### Setup
+### Setup
 
-    1. Create App Registration 
+#### 1. Create App Registration 
 
 Search for 'App Registration' in Azure Portal
 Create New Registration
@@ -123,14 +123,12 @@ Redirect URI is not necessary
 
 
 
-    2. Create an Azure Key Vault
-        a. This will be utilized to store the SPN secret when it is created
+#### 2. Create an Azure Key Vault (This will be utilized to store the SPN secret when it is created)
 
 
 
+#### 3. Navigate back to App Registrations and create a Client Secret
 
-    3. Navigate back to App Registrations and create a Client Secret
-    
 ![Alt text](docs/images/purview-app-registration-images/App_Registration_3.png)
     
 
@@ -147,7 +145,7 @@ NOTE: Do not change Admin Consent Required to No as this will cause issues with 
 
 
 
-    4. Create Security Groups
+#### 4. Create Security Groups
 
 Search for 'Microsoft Entra' in the Azure Portal and select Groups:
 
@@ -161,7 +159,7 @@ Create a new group of type 'Security' and add the SPN(s) created to the group:
 
 
 
-    5. Enable Power BI Tenant Settings
+#### 5. Enable Power BI Tenant Settings
 Navigate to the Power BI Admin Portal Tenant Settings
 
 Enable 'Service principals can use Fabric APIs for Specific Security Groups and add the group(s) you created:
