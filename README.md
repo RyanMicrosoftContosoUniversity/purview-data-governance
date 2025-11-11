@@ -177,9 +177,6 @@ Do the same for 'Service principals can access read-only admin APIs', 'Enhance a
 ![Alt text](docs/images/purview-app-registration-images/Tenant_Settings_10.png)
 
 
-
-// ...existing code...
-
 ## Purview Data Map Best Practices
 
 ### Strategic vs. Operational Organization
