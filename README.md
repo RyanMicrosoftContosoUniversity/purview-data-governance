@@ -176,3 +176,62 @@ Do the same for 'Service principals can access read-only admin APIs', 'Enhance a
 
 ![Alt text](docs/images/purview-app-registration-images/Tenant_Settings_10.png)
 
+
+
+// ...existing code...
+
+## Purview Data Map Best Practices
+
+### Strategic vs. Operational Organization
+
+- **Separate Strategy from Operations**: Domains are limited (only 5 allowed) and strategic, whereas Collections are operational. Leverage Collections for organizing resources, scans, and access boundaries.
+- **Leverage Collection Depth**: Collections can go 8 levels deep - use this flexibility but prefer shallow, readable hierarchies (aim for 3-5 levels) unless granular control is required.
+
+### Source and Scan Placement
+
+- **Understand Source Limitations**: A data source can't be registered multiple times in the same Purview account. Land assets in subcollections for better delegation and organization.
+- **Strategic Collection Placement**: Register sources under the appropriate domain/collection based on business ownership and operational needs.
+
+### Naming Conventions
+
+**Standardize Naming Patterns** using useful identifiers:
+- **Environment**: prod, np, dev, test
+- **Region**: eus2, wus2  
+- **Zone**: raw, cur, gold (or bronze, silver, gold)
+- **Domain/Business Unit**: fin, hr, mkt
+
+**Collection Naming Format**: `<bu>-<env>-<domain>-<project>`
+- Keep names unique to avoid confusion in deep trees
+- Example: `fin-prod-analytics-customer360`
+
+**Scan Naming Format**: `<env>-<source>-<scope>-<freq>-<ir>-<hhmm>`
+- Example: `prd-adls-raw_daily-azureIR-0200`
+
+### Scan Rule Sets
+
+**Leverage Scan Rule Sets** to control scanning behavior:
+- **System Scan Rule Sets**: Predefined by Microsoft, automatically updated, includes default classification rules
+- **Custom Scan Rule Sets**: User-created for business-specific needs (e.g., scan only .csv or .parquet files)
+- **Note**: Custom scan rule sets do not currently exist for Fabric
+
+Scan rule sets determine:
+- File types to include/exclude during scanning
+- Which classification rules to apply (system or custom)
+- Ignore patterns for files or folders
+- Custom configurations for schema extraction and classification
+
+### Scanning Best Practices
+
+1. **Decide classification requirements** (system vs custom)
+2. **Create or select scan rule sets** (include only what you need)
+3. **Register the source** under the right domain/collection
+4. **Choose credentials and integration runtime** type based on network needs
+5. **Configure scan scope and schedule** appropriately
+
+### Monitoring and Diagnostics
+
+- **Enable Diagnostic Policies**: Ensure diagnostic policies are enabled on Purview to collect logs for debugging any issues that occur
+- **Monitor Scan Performance**: Track scan duration, success rates, and resource consumption
+
+
+
