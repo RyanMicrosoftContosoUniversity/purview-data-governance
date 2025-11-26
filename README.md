@@ -1,5 +1,7 @@
 # Purview Data Governance Field Guide
 
+> **Disclaimer:** This material is provided as-is based on best efforts and may not be maintained to stay current with product updates. Please refer to the [DISCLAIMER](DISCLAIMER.md) for full terms.
+
 This guide consolidates the key lessons on designing, governing, and securing a Microsoft Purview implementation. Use it as a quick reference when shaping your data map, onboarding sources, curating assets, and publishing governed data products.
 
 ![Purview Data Governance Overview](docs/images/purview-data-governance-overview.png)
