@@ -1,0 +1,47 @@
+{
+    "EventName": "DiagnosticsLogs",
+    "body": "System.Collections.Generic.List`1[System.Collections.Generic.KeyValuePair`2[System.String,System.Object]]",
+    "category": "PipelineRuns",
+    "correlationId": "f9557397-47cb-463f-aff2-a803d8c40245",
+    "end": "2025-09-22T17:52:22.0000000Z",
+    "env_dt_spanId": "e270847afd6595d3",
+    "env_dt_traceId": "298575a8ae9468fc5fbb508e4afa8d45",
+    "env_name": "DiagnosticsLogsSource",
+    "env_time": "2025-09-22T17:52:22.6762730Z",
+    "env_ver": "4.0",
+    "failureType": "UserError",
+    "groupId": "f9557397-47cb-463f-aff2-a803d8c40245",
+    "level": "Error",
+    "location": "centralus",
+    "name": "DiagnosticsLogs",
+    "operationName": "pl_orchestration_recipe_3 - Failed",
+    "pipelineName": "pl_orchestration_recipe_3",
+    "properties": {
+        "Parameters": {},
+        "SystemParameters": {
+            "ExecutionStart": "2025-09-22T17:52:11.6002609Z",
+            "TriggerId": "ec41ff0ea7c84dc49f85de394c3999f0",
+            "SubscriptionId": "910ebf13-1058-405d-b6cf-eda03e5288d1",
+            "PipelineRunRequestTime": "2025-09-22T17:52:10.6697668"
+        },
+        "Predecessors": [
+            {
+                "Name": "Manual",
+                "Id": "ec41ff0ea7c84dc49f85de394c3999f0",
+                "InvokedByType": "Manual"
+            }
+        ],
+        "UserProperties": {},
+        "Annotations": [],
+        "Message": "Operation on target CsvDataFolderMetadata failed: Field 'lastModified' failed with error: 'Type=Microsoft.DataTransfer.Common.Shared.HybridDeliveryException,Message=ADLS Gen2 failed for forbidden: Storage operation '' on container 'data' get failed with 'Operation returned an invalid status code 'Forbidden''. Possible root causes: (1). It is possible that the service principal or managed identity don't have enough permission to access the data. (2). If you're utilizing Fabric service and your storage account has enabled firewall, please use Workspace Identity/Service Principal/OAuth to connect. For more information, see https://learn.microsoft.com/en-us/fabric/security/workspace-identity. (3). Please check storage network setting whether public network access is disabled. If disabled, use Managed Virtual Network IR and create Private Endpoint to access. https://docs.microsoft.com/en-us/azure/data-factory/managed-virtual-network-private-endpoint. https://docs.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-portal-private (4). It is possible that some IP address ranges of Azure Data Factory are not allowed by your Azure Storage firewall settings. For Azure Data Factory IP ranges please refer to https://docs.microsoft.com/en-us/azure/data-factory/azure-integration-runtime-ip-addresses. If you allow trusted Microsoft services to access this storage account option in firewall, you must use https://docs.microsoft.com/en-us/azure/data-factory/connector-azure-blob-storage?tabs=data-factory#managed-identity. For more information on Azure Storage firewalls settings, see https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal.. Account: 'storageadfqa'. FileSystem: 'data'. ErrorCode: 'AuthorizationPermissionMismatch'. Message: 'This request is not authorized to perform this operation using this permission.'. RequestId: '62a8decd-e01f-004d-23e9-2bb869000000'. TimeStamp: 'Mon, 22 Sep 2025 17:52:17 GMT'..,Source=Microsoft.DataTransfer.ClientLibrary,''Type=Microsoft.DataTransfer.Common.Shared.HybridDeliveryException,Message=Operation returned an invalid status code 'Forbidden',Source=,''Type=Microsoft.Azure.Storage.Data.Models.ErrorSchemaException,Message=Operation returned an invalid status code 'Forbidden',Source=Microsoft.DataTransfer.ClientLibrary,'."
+    },
+    "resourceId": "/SUBSCRIPTIONS/910EBF13-1058-405D-B6CF-EDA03E5288D1/RESOURCEGROUPS/AFDCOOKBOOKRG/PROVIDERS/MICROSOFT.DATAFACTORY/FACTORIES/BICEPADF",
+    "runId": "f9557397-47cb-463f-aff2-a803d8c40245",
+    "severityNumber": 9,
+    "severityText": "Information",
+    "start": "2025-09-22T17:52:10.0000000Z",
+    "status": "Failed",
+    "tags": "{\"catalogUri\":\"35acf02c-4b87-4ae6-9221-ff5cafd430b4-api.purview-service.microsoft.com/catalog\"}",
+    "timestamp": "2025-09-22T17:52:22.0000000Z",
+    "time": "2025-09-22T17:52:22.6762730Z"
+}
