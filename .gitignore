@@ -16,3 +16,8 @@ scripts/fabric_audit_env.env
 
 # output files
 scripts\cost-analysis\output
+
+
+
+# environment files
+.vscode/settings.json
