@@ -12,6 +12,8 @@ scripts/fabric_audit_env.env
 *.env
 !*.env.example
 *.log
+do_not_commit/*
+terraform-notes/*
 
 
 # output files
@@ -21,3 +23,6 @@ scripts\cost-analysis\output
 
 # environment files
 .vscode/settings.json
+
+
+do_not_commit/*
