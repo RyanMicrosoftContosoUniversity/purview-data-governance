@@ -225,7 +225,7 @@ jobs:
         # function_app_flex_consumption resource can't be included in the TF
         # drift plan (its app_settings reference fabric_lakehouse).
         env:
-          FUNCTION_APP_NAME: func-fabric-classify-rh
+          FUNCTION_APP_NAME: func-fabricsens-rh
           FUNCTION_APP_RG: governance-rg
         run: |
           set -euo pipefail
