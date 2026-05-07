@@ -13,6 +13,7 @@ from classify_assets.handler import classify_assets_impl
 
 app = func.FunctionApp()
 
+
 @app.function_name(name='classify_assets')
 @app.event_hub_message_trigger(
     arg_name='events',
