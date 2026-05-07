@@ -121,6 +121,13 @@ resource "azurerm_function_app_flex_consumption" "func" {
     # function_app.py is "PurviewEvents"; the host resolves the FQNS via this
     # prefixed setting and authenticates using the function's MI.
     PurviewEvents__fullyQualifiedNamespace = "${azurerm_eventhub_namespace.purview_events.name}.servicebus.windows.net"
+    # REQUIRED on Flex Consumption (and recommended elsewhere): tells the host
+    # AND the platform scale controller to authenticate to Event Hubs using
+    # the function's system-assigned managed identity. Without this, the
+    # scale controller can't poll the EH for events, so it never scales up
+    # an instance to process them — the listener appears DEAD even though
+    # the function is healthy.
+    PurviewEvents__credential = "managedidentity"
     # NOTE: Do NOT set WEBSITE_RUN_FROM_PACKAGE on Flex Consumption.
     # Flex uses functionAppConfig.deployment.storage (configured by the
     # storage_container_* arguments above), and WEBSITE_RUN_FROM_PACKAGE
