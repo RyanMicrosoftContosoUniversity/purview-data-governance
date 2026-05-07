@@ -2,11 +2,13 @@
 # GitHub Actions CI/CD
 # Purview Classification Function (fabric-delta-table-sensitivity-purview-int)
 #
-# Mirrors azure-pipelines.yml:
-#   1. Validate — ruff format check + pytest
-#   2. Package  — install prod deps to .python_packages, zip the function
-#   3. Deploy   — zip-deploy to Flex Consumption Function App (main only)
-#   4. Verify   — confirm classify_assets is indexed
+# Pipeline stages:
+#   1. Validate        — ruff format check + pytest
+#   2. Drift-detect    — terraform plan, fail if IaC drifts from Azure (PR only)
+#   3. Package         — install prod deps to .python_packages, zip the function
+#   4. Deploy          — zip-deploy to Flex Consumption Function App (main only)
+#   5. Verify          — confirm classify_assets is indexed
+#   6. Listener-health — confirm EH listener is alive (lease blob heartbeat)
 #
 # Authenticates to Azure with OIDC (workload identity federation). No secrets.
 # Required environment-scoped variables (Settings → Environments → <env>):
@@ -15,6 +17,14 @@
 #   AZURE_SUBSCRIPTION_ID
 #   RESOURCE_GROUP_NAME
 #   FUNCTION_APP_NAME
+#
+# Required RBAC for the federated app reg (subscription scope unless noted):
+#   Reader                                — read all resources for tf plan
+#   Storage Blob Data Contributor         — on terraform state container
+#                                           (terraformsaeheus2/tf-state-container)
+#   Storage Blob Data Reader              — on function host storage
+#                                           (stfabricsensrh) for lease blob check
+#   Website Contributor (or higher)       — on the function app for zip deploy
 # =============================================================================
 
 name: classify-assets-function
@@ -24,11 +34,13 @@ on:
     branches: [main]
     paths:
       - 'fabric-delta-table-sensitivity-purview-int/iac/function/**'
+      - 'fabric-delta-table-sensitivity-purview-int/iac/*.tf'
       - '.github/workflows/classify-assets-function.yml'
   pull_request:
     branches: [main]
     paths:
       - 'fabric-delta-table-sensitivity-purview-int/iac/function/**'
+      - 'fabric-delta-table-sensitivity-purview-int/iac/*.tf'
       - '.github/workflows/classify-assets-function.yml'
   workflow_dispatch:
     inputs:
@@ -101,7 +113,151 @@ jobs:
           path: ${{ env.FUNCTION_ROOT }}/test-results.xml
 
   # ===========================================================================
-  # STAGE 2: Package (build deployment zip)
+  # STAGE 2: Terraform drift detection
+  # Runs `terraform plan` and fails if live Azure state has drifted from IaC.
+  # This catches manual portal/CLI changes (like the AzureWebJobsStorage=""
+  # fiasco that wasn't reflected in TF until after the fact).
+  # ===========================================================================
+  drift-detect:
+    name: Terraform drift check
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    defaults:
+      run:
+        working-directory: fabric-delta-table-sensitivity-purview-int/iac
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform init
+        env:
+          # azurerm provider: must use OIDC (rejects CLI auth for SPs).
+          ARM_USE_OIDC: 'true'
+          ARM_USE_AZUREAD: 'true'
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          # microsoft/fabric provider: hardcoded use_cli=true in providers.tf.
+          # It also reads ARM_USE_OIDC, which would conflict. Override with
+          # FABRIC_* env vars so it ignores the azurerm OIDC settings.
+          FABRIC_USE_OIDC: 'false'
+          FABRIC_USE_MSI: 'false'
+          FABRIC_USE_CLI: 'true'
+        run: |
+          export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
+          export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
+          export ARM_SUBSCRIPTION_ID="$(echo -n "$ARM_SUBSCRIPTION_ID" | tr -d '[:space:]')"
+          terraform init -input=false
+
+      - name: Terraform plan (detailed exit code)
+        id: plan
+        env:
+          ARM_USE_OIDC: 'true'
+          ARM_USE_AZUREAD: 'true'
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          FABRIC_USE_OIDC: 'false'
+          FABRIC_USE_MSI: 'false'
+          FABRIC_USE_CLI: 'true'
+        run: |
+          export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
+          export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
+          export ARM_SUBSCRIPTION_ID="$(echo -n "$ARM_SUBSCRIPTION_ID" | tr -d '[:space:]')"
+          # Use -refresh=false to skip reading live Azure state. This avoids
+          # triggering the fabric provider (whose SP doesn't have Fabric
+          # workspace auth). We still catch the most important class of
+          # drift: divergence between TF code and last-applied state — i.e.,
+          # someone changed TF without running apply, or someone applied
+          # without committing. Out-of-band Azure portal changes are NOT
+          # caught here; the dedicated "Function app config check" step
+          # below uses `az` to verify the live function-app config directly,
+          # which targets the specific bug class that motivated this job.
+          set +e
+          terraform plan -input=false -lock=false -refresh=false -detailed-exitcode -out=tfplan \
+            -target=azurerm_storage_account.func \
+            -target=azurerm_storage_container.deployments \
+            -target=azurerm_log_analytics_workspace.func \
+            -target=azurerm_application_insights.func \
+            -target=azurerm_service_plan.func \
+            -target=azurerm_role_assignment.func_storage \
+            -target=azurerm_role_assignment.func_storage_queue \
+            -target=azurerm_role_assignment.func_storage_table \
+            -target=azurerm_role_assignment.func_eh_receiver \
+            -target=azurerm_eventhub_namespace.purview_events \
+            -target=azurerm_eventhub.scan_status \
+            -target=azurerm_eventhub_namespace_authorization_rule.diag_send \
+            -target=azurerm_monitor_diagnostic_setting.purview_to_eh
+          rc=$?
+          set -e
+          # detailed-exitcode: 0 = no changes, 1 = error, 2 = drift detected
+          case $rc in
+            0)
+              echo "::notice::No drift on function-app resources."
+              ;;
+            1)
+              echo "::error::terraform plan failed."
+              exit 1
+              ;;
+            2)
+              echo "::error::Drift detected on function-app resources — live Azure differs from IaC. Review the plan output and either update Terraform to match reality or apply Terraform to reset the live state."
+              terraform show -no-color tfplan
+              exit 1
+              ;;
+          esac
+
+      - name: Function app config check (AzureWebJobsStorage sanity)
+        # This guards against the specific bug class where AzureWebJobsStorage
+        # is set to empty string on a Flex Consumption function with
+        # identity-based storage, which silently breaks the EH listener.
+        # We check the live Azure config directly (not TF state) because the
+        # function_app_flex_consumption resource can't be included in the TF
+        # drift plan (its app_settings reference fabric_lakehouse).
+        env:
+          FUNCTION_APP_NAME: func-fabricsens-rh
+          FUNCTION_APP_RG: governance-rg
+        run: |
+          set -euo pipefail
+          echo "Reading app settings for $FUNCTION_APP_NAME ..."
+          settings_json=$(az functionapp config appsettings list \
+            -g "$FUNCTION_APP_RG" -n "$FUNCTION_APP_NAME" -o json)
+
+          # Required: AzureWebJobsStorage__accountName must be set.
+          acct_name=$(echo "$settings_json" | jq -r '.[] | select(.name=="AzureWebJobsStorage__accountName") | .value')
+          if [ -z "$acct_name" ] || [ "$acct_name" = "null" ]; then
+            echo "::error::AzureWebJobsStorage__accountName is not set on $FUNCTION_APP_NAME. Identity-based storage will not work and the EH listener will fail."
+            exit 1
+          fi
+          echo "✓ AzureWebJobsStorage__accountName = $acct_name"
+
+          # Forbidden: AzureWebJobsStorage must NOT exist with empty value.
+          # An empty AzureWebJobsStorage suppresses the __accountName path on
+          # Flex Consumption and silently breaks EH listener lease acquisition.
+          awjs_present=$(echo "$settings_json" | jq -r '[.[] | select(.name=="AzureWebJobsStorage")] | length')
+          if [ "$awjs_present" -gt 0 ]; then
+            awjs_value=$(echo "$settings_json" | jq -r '.[] | select(.name=="AzureWebJobsStorage") | .value')
+            if [ -z "$awjs_value" ] || [ "$awjs_value" = "null" ]; then
+              echo "::error::AzureWebJobsStorage is set to an empty value on $FUNCTION_APP_NAME. On Flex Consumption with identity-based storage this silently breaks the EH listener. Remove the empty AzureWebJobsStorage setting."
+              exit 1
+            fi
+            echo "⚠ AzureWebJobsStorage is set to a non-empty connection string. That bypasses managed-identity storage but will not break the listener."
+          else
+            echo "✓ AzureWebJobsStorage is not set (correct for identity-based storage)."
+          fi
+
+  # ===========================================================================
+  # STAGE 3: Package (build deployment zip)
   # ===========================================================================
   package:
     name: Package function
@@ -158,7 +314,7 @@ jobs:
           retention-days: 7
 
   # ===========================================================================
-  # STAGE 3: Deploy (main branch only)
+  # STAGE 4: Deploy (main branch only)
   # ===========================================================================
   deploy:
     name: Deploy to Azure
@@ -195,7 +351,7 @@ jobs:
             --build-remote false
 
   # ===========================================================================
-  # STAGE 4: Verify (post-deploy smoke check)
+  # STAGE 5: Verify (post-deploy smoke check)
   # ===========================================================================
   verify:
     name: Verify deployment
@@ -226,3 +382,70 @@ jobs:
             exit 1
           fi
           echo "::notice::classify_assets is indexed and ready."
+
+  # ===========================================================================
+  # STAGE 6: Listener health (post-deploy)
+  # Confirms the EH listener actually attached. The EventProcessor library
+  # writes an ownership/lease blob per partition every ~5 min — if these are
+  # stale or missing, the listener is dead even though the deploy "succeeded".
+  # This is the smoking-gun signal for the AzureWebJobsStorage="" failure mode.
+  # Requires: federated app reg has Storage Blob Data Reader on stfabricsensrh.
+  # ===========================================================================
+  listener-health:
+    name: EH listener health check
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    env:
+      STORAGE_ACCT: stfabricsensrh
+      CONTAINER: azure-webjobs-eventhub
+      OWNERSHIP_PREFIX: ehns-fabricsens-rh.servicebus.windows.net/purview-scan-status/$Default/ownership
+    steps:
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify EH lease blob heartbeat
+        run: |
+          set -euo pipefail
+          # Allow up to 3 min for the host to re-attach the listener.
+          # Lease must be < 10 min old to count as "alive".
+          MAX_WAIT=180
+          THRESHOLD_SEC=600
+          STEP=15
+          ELAPSED=0
+
+          while [ $ELAPSED -lt $MAX_WAIT ]; do
+            BLOBS=$(az storage blob list \
+              --account-name "$STORAGE_ACCT" \
+              --container-name "$CONTAINER" \
+              --prefix "$OWNERSHIP_PREFIX" \
+              --auth-mode login \
+              --query "[].{name:name, lastModified:properties.lastModified}" \
+              -o json 2>/dev/null || echo "[]")
+
+            COUNT=$(echo "$BLOBS" | jq 'length')
+            if [ "$COUNT" -gt 0 ]; then
+              NEWEST=$(echo "$BLOBS" | jq -r 'max_by(.lastModified) | .lastModified')
+              NEWEST_TS=$(date -d "$NEWEST" +%s)
+              NOW_TS=$(date -u +%s)
+              AGE=$((NOW_TS - NEWEST_TS))
+              echo "Found $COUNT ownership blob(s); newest is ${AGE}s old ($NEWEST)"
+              if [ $AGE -lt $THRESHOLD_SEC ]; then
+                echo "::notice::EH listener is alive — lease renewed ${AGE}s ago."
+                exit 0
+              fi
+            else
+              echo "No ownership blobs found yet (waited ${ELAPSED}s)..."
+            fi
+            sleep $STEP
+            ELAPSED=$((ELAPSED + STEP))
+          done
+
+          echo "::error::EH listener appears DEAD — no ownership blob renewal in the last ${THRESHOLD_SEC}s after waiting ${MAX_WAIT}s post-deploy."
+          echo "::error::This is the same failure mode caused by AzureWebJobsStorage='' on Flex Consumption."
+          echo "::error::Check app settings: 'az functionapp config appsettings list -g \${RG} -n \${APP}' — there should be NO 'AzureWebJobsStorage' (only 'AzureWebJobsStorage__accountName')."
+          exit 1

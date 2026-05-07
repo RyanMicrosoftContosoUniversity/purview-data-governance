@@ -101,18 +101,18 @@ resource "azurerm_function_app_flex_consumption" "func" {
     PURVIEW_ENDPOINT                      = data.external.purview_catalog_endpoint.result.uri
     CLASSIFICATION_NAMESPACE              = var.classification_namespace
     SENSITIVITY_LEVEL_MAP_JSON            = jsonencode(var.sensitivity_levels)
-    # Tell the Functions host to use the system-assigned MI for AzureWebJobsStorage
-    # (host secrets, triggers, scaling state). Without this, azurerm injects a
-    # default `AzureWebJobsStorage` connection string with an empty AccountKey
-    # and the host fails with `AuthenticationFailed` reading azure-webjobs-secrets.
+    # Identity-based AzureWebJobsStorage: only this prefixed setting is needed.
+    # The host uses it to find host-level storage (host secrets, function key
+    # store, scale-controller state, EH listener checkpoints/leases) over
+    # Microsoft Entra via the function's system-assigned MI.
+    #
+    # IMPORTANT: do NOT also set `AzureWebJobsStorage` (without a suffix), even
+    # to "". An empty `AzureWebJobsStorage` was found to suppress the
+    # identity-based path and silently disable the EH listener (no telemetry,
+    # no invocations, stale lease blobs) on Flex Consumption. The line was
+    # removed deliberately; if azurerm starts auto-injecting a broken value,
+    # use a `lifecycle { ignore_changes = ... }` block instead of re-adding it.
     AzureWebJobsStorage__accountName      = azurerm_storage_account.func.name
-    # CRITICAL: azurerm auto-injects `AzureWebJobsStorage` as a broken
-    # connection string with an empty AccountKey. The host then prefers it
-    # over `__accountName` and fails with `AuthenticationFailed` on the
-    # WebJobs storage health check, which keeps the listener from starting.
-    # Explicitly null it out so only the MI-based `__accountName` path is
-    # used.
-    AzureWebJobsStorage                   = ""
     # Required for the Python v2 programming model: tells the host to discover
     # functions by importing function_app.py and reading its decorators
     # (instead of scanning per-function function.json files).
