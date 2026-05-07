@@ -1,0 +1,228 @@
+# =============================================================================
+# GitHub Actions CI/CD
+# Purview Classification Function (fabric-delta-table-sensitivity-purview-int)
+#
+# Mirrors azure-pipelines.yml:
+#   1. Validate — ruff format check + pytest
+#   2. Package  — install prod deps to .python_packages, zip the function
+#   3. Deploy   — zip-deploy to Flex Consumption Function App (main only)
+#   4. Verify   — confirm classify_assets is indexed
+#
+# Authenticates to Azure with OIDC (workload identity federation). No secrets.
+# Required environment-scoped variables (Settings → Environments → <env>):
+#   AZURE_CLIENT_ID         (federated app reg)
+#   AZURE_TENANT_ID
+#   AZURE_SUBSCRIPTION_ID
+#   RESOURCE_GROUP_NAME
+#   FUNCTION_APP_NAME
+# =============================================================================
+
+name: classify-assets-function
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'fabric-delta-table-sensitivity-purview-int/iac/function/**'
+      - '.github/workflows/classify-assets-function.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'fabric-delta-table-sensitivity-purview-int/iac/function/**'
+      - '.github/workflows/classify-assets-function.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        type: choice
+        default: dev
+        options: [dev]
+      runTests:
+        description: 'Run unit tests'
+        type: boolean
+        default: true
+      runLint:
+        description: 'Run ruff lint'
+        type: boolean
+        default: true
+      deployFunction:
+        description: 'Deploy function (main only)'
+        type: boolean
+        default: true
+
+permissions:
+  id-token: write   # required for OIDC federation to Azure
+  contents: read
+
+env:
+  PYTHON_VERSION: '3.11'
+  FUNCTION_ROOT: fabric-delta-table-sensitivity-purview-int/iac/function
+
+jobs:
+  # ===========================================================================
+  # STAGE 1: Validate (lint + unit tests)
+  # ===========================================================================
+  validate:
+    name: Validate (lint + tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.FUNCTION_ROOT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: ${{ env.FUNCTION_ROOT }}/requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install ruff
+
+      - name: Ruff format check
+        if: ${{ github.event.inputs.runLint != 'false' }}
+        run: ruff format --config "format.quote-style='single'" --check classify_assets/ function_app.py
+
+      - name: Run pytest
+        if: ${{ github.event.inputs.runTests != 'false' }}
+        run: python -m pytest tests/ -x --tb=short --junitxml=test-results.xml
+
+      - name: Upload test results
+        if: ${{ always() && github.event.inputs.runTests != 'false' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ${{ env.FUNCTION_ROOT }}/test-results.xml
+
+  # ===========================================================================
+  # STAGE 2: Package (build deployment zip)
+  # ===========================================================================
+  package:
+    name: Package function
+    needs: validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.FUNCTION_ROOT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: ${{ env.FUNCTION_ROOT }}/requirements.txt
+
+      - name: Install production dependencies into .python_packages
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          pip install \
+            --target=".python_packages/lib/site-packages" \
+            -r requirements.txt
+
+      - name: Build deployment zip
+        run: |
+          set -euo pipefail
+          # Match exclusions from iac/phase2_function.tf archive_file.
+          rm -rf .ruff_cache .pytest_cache tests
+          find . -type d -name __pycache__ -exec rm -rf {} +
+          zip -r function.zip . \
+            -x '*.pyc' \
+            -x 'local.settings.json' \
+            -x 'local.settings.json.example' \
+            -x 'CICD.md' \
+            -x 'azure-pipelines.yml'
+
+      - name: Verify zip contents
+        run: |
+          set -euo pipefail
+          unzip -l function.zip | head -40
+          if ! unzip -l function.zip | grep -q ' function_app\.py$'; then
+            echo "::error::function_app.py not found at zip root"
+            exit 1
+          fi
+
+      - name: Upload function-package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: function-package
+          path: ${{ env.FUNCTION_ROOT }}/function.zip
+          retention-days: 7
+
+  # ===========================================================================
+  # STAGE 3: Deploy (main branch only)
+  # ===========================================================================
+  deploy:
+    name: Deploy to Azure
+    needs: package
+    if: |
+      github.ref == 'refs/heads/main' &&
+      (github.event.inputs.deployFunction != 'false')
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    steps:
+      - name: Download function-package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: function-package
+          path: ./artifact
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Zip-deploy to Flex Consumption app
+        run: |
+          set -euo pipefail
+          ZIP_PATH="$GITHUB_WORKSPACE/artifact/function.zip"
+          echo "Deploying $ZIP_PATH to ${{ vars.FUNCTION_APP_NAME }} in ${{ vars.RESOURCE_GROUP_NAME }}"
+          # Flex Consumption requires --build-remote false (zip already contains deps).
+          az functionapp deployment source config-zip \
+            --resource-group "${{ vars.RESOURCE_GROUP_NAME }}" \
+            --name "${{ vars.FUNCTION_APP_NAME }}" \
+            --src "$ZIP_PATH" \
+            --build-remote false
+
+  # ===========================================================================
+  # STAGE 4: Verify (post-deploy smoke check)
+  # ===========================================================================
+  verify:
+    name: Verify deployment
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    steps:
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Confirm classify_assets is indexed
+        run: |
+          set -euo pipefail
+          # Give the host a moment to restart and re-index after the deploy.
+          sleep 30
+          FUNCS=$(az functionapp function list \
+            --resource-group "${{ vars.RESOURCE_GROUP_NAME }}" \
+            --name "${{ vars.FUNCTION_APP_NAME }}" \
+            --query "[].name" -o tsv)
+          echo "Functions discovered:"
+          echo "$FUNCS"
+          if ! echo "$FUNCS" | grep -q "classify_assets"; then
+            echo "::error::classify_assets function not indexed on ${{ vars.FUNCTION_APP_NAME }}"
+            exit 1
+          fi
+          echo "::notice::classify_assets is indexed and ready."
