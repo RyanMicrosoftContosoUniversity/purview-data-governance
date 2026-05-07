@@ -175,18 +175,20 @@ jobs:
           export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
           export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
           export ARM_SUBSCRIPTION_ID="$(echo -n "$ARM_SUBSCRIPTION_ID" | tr -d '[:space:]')"
-          # Scope the plan to function-app-related resources only. Fabric
-          # resources (lakehouse, notebook, workspace role) require Fabric API
-          # consent that the federated SP doesn't have, and they're not where
-          # the function-deploy bugs hide. -target also scopes refresh, so
-          # unrelated fabric resources won't be touched.
-          #
-          # NOTE: azurerm_storage_blob.function_zip is intentionally excluded.
-          # TF's archive_file regenerates a hash from local source on every run,
-          # but the actual deploy uses 'az functionapp deployment source
-          # config-zip' (separate from TF's blob upload). The blob will always
-          # show as drifted whenever code changes, which is expected and
-          # unrelated to the kind of config drift we want to catch.
+          # Scope the plan to function-app-related infrastructure only.
+          # EXCLUSIONS and why:
+          # - fabric_* resources: federated SP has no Fabric workspace consent.
+          # - azurerm_function_app_flex_consumption.func: its app_settings
+          #   reference fabric_lakehouse.this.id, which forces a fabric
+          #   provider read during plan refresh and fails auth. The function
+          #   app config is instead validated by the dedicated
+          #   "Function app config check" step below using `az`, which is more
+          #   targeted at the bug class we care about (e.g., empty
+          #   AzureWebJobsStorage on Flex Consumption).
+          # - azurerm_storage_blob.function_zip: TF's archive_file regenerates
+          #   a hash from local source on every run, but the actual deploy uses
+          #   'az functionapp deployment source config-zip' (separate path).
+          #   The blob will always show drift on code changes — expected.
           set +e
           terraform plan -input=false -lock=false -detailed-exitcode -out=tfplan \
             -target=azurerm_storage_account.func \
@@ -194,7 +196,6 @@ jobs:
             -target=azurerm_log_analytics_workspace.func \
             -target=azurerm_application_insights.func \
             -target=azurerm_service_plan.func \
-            -target=azurerm_function_app_flex_consumption.func \
             -target=azurerm_role_assignment.func_storage \
             -target=azurerm_role_assignment.func_storage_queue \
             -target=azurerm_role_assignment.func_storage_table \
@@ -220,6 +221,45 @@ jobs:
               exit 1
               ;;
           esac
+
+      - name: Function app config check (AzureWebJobsStorage sanity)
+        # This guards against the specific bug class where AzureWebJobsStorage
+        # is set to empty string on a Flex Consumption function with
+        # identity-based storage, which silently breaks the EH listener.
+        # We check the live Azure config directly (not TF state) because the
+        # function_app_flex_consumption resource can't be included in the TF
+        # drift plan (its app_settings reference fabric_lakehouse).
+        env:
+          FUNCTION_APP_NAME: func-fabric-classify-rh
+          FUNCTION_APP_RG: governance-rg
+        run: |
+          set -euo pipefail
+          echo "Reading app settings for $FUNCTION_APP_NAME ..."
+          settings_json=$(az functionapp config appsettings list \
+            -g "$FUNCTION_APP_RG" -n "$FUNCTION_APP_NAME" -o json)
+
+          # Required: AzureWebJobsStorage__accountName must be set.
+          acct_name=$(echo "$settings_json" | jq -r '.[] | select(.name=="AzureWebJobsStorage__accountName") | .value')
+          if [ -z "$acct_name" ] || [ "$acct_name" = "null" ]; then
+            echo "::error::AzureWebJobsStorage__accountName is not set on $FUNCTION_APP_NAME. Identity-based storage will not work and the EH listener will fail."
+            exit 1
+          fi
+          echo "✓ AzureWebJobsStorage__accountName = $acct_name"
+
+          # Forbidden: AzureWebJobsStorage must NOT exist with empty value.
+          # An empty AzureWebJobsStorage suppresses the __accountName path on
+          # Flex Consumption and silently breaks EH listener lease acquisition.
+          awjs_present=$(echo "$settings_json" | jq -r '[.[] | select(.name=="AzureWebJobsStorage")] | length')
+          if [ "$awjs_present" -gt 0 ]; then
+            awjs_value=$(echo "$settings_json" | jq -r '.[] | select(.name=="AzureWebJobsStorage") | .value')
+            if [ -z "$awjs_value" ] || [ "$awjs_value" = "null" ]; then
+              echo "::error::AzureWebJobsStorage is set to an empty value on $FUNCTION_APP_NAME. On Flex Consumption with identity-based storage this silently breaks the EH listener. Remove the empty AzureWebJobsStorage setting."
+              exit 1
+            fi
+            echo "⚠ AzureWebJobsStorage is set to a non-empty connection string. That bypasses managed-identity storage but will not break the listener."
+          else
+            echo "✓ AzureWebJobsStorage is not set (correct for identity-based storage)."
+          fi
 
   # ===========================================================================
   # STAGE 3: Package (build deployment zip)
