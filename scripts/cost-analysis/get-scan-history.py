@@ -50,7 +50,6 @@ def get_token(resource: str) -> str:
             capture_output=True,
             text=True,
             check=True,
-            shell=True,
         )
         return json.loads(result.stdout)["accessToken"]
     except (subprocess.CalledProcessError, KeyError, json.JSONDecodeError) as exc:
