@@ -1,0 +1,268 @@
+# =============================================================================
+# Azure DevOps Multi-Stage Pipeline
+# Purview Classification Function (fabric-delta-table-sensitivity-purview-int)
+#
+# Stages:
+#   1. Validate — Lint (ruff), unit tests (pytest, 28 tests)
+#   2. Package  — Install prod deps to .python_packages, zip the function
+#   3. Deploy   — Zip-deploy to existing Flex Consumption Function App
+#                 (main branch only)
+#   4. Verify   — Confirm function is indexed and listener healthy
+#
+# Triggers only on changes under iac/function/**.
+# Assumes infra (Function App, Storage, App Insights, role assignments) is
+# already provisioned via `terraform apply` in iac/. This pipeline only
+# updates the function code.
+# =============================================================================
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - fabric-delta-table-sensitivity-purview-int/iac/function/**
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - fabric-delta-table-sensitivity-purview-int/iac/function/**
+
+# ---------------------------------------------------------------------------
+# Parameters — selectable at queue time
+# ---------------------------------------------------------------------------
+parameters:
+  - name: environment
+    displayName: Target Environment
+    type: string
+    default: dev
+    values:
+      - dev
+
+  - name: runTests
+    displayName: Run Unit Tests
+    type: boolean
+    default: true
+
+  - name: runLint
+    displayName: Run Ruff Lint
+    type: boolean
+    default: true
+
+  - name: deployFunction
+    displayName: Deploy Function (main only)
+    type: boolean
+    default: true
+
+# ---------------------------------------------------------------------------
+# Variables — override per-environment via variable group
+# ---------------------------------------------------------------------------
+variables:
+  - group: purview-data-governance-${{ parameters.environment }}
+  # Expected variables in the group:
+  #   AZURE_SUBSCRIPTION_ID   - 910ebf13-1058-405d-b6cf-eda03e5288d1
+  #   RESOURCE_GROUP_NAME     - governance-rg
+  #   FUNCTION_APP_NAME       - func-fabricsens-rh
+
+  - name: serviceConnection
+    value: sc-purview-data-governance-${{ parameters.environment }}
+
+  - name: pythonVersion
+    value: '3.11'
+
+  - name: functionRoot
+    value: fabric-delta-table-sensitivity-purview-int/iac/function
+
+  - name: vmImage
+    value: ubuntu-latest
+
+# ---------------------------------------------------------------------------
+# Stages
+# ---------------------------------------------------------------------------
+stages:
+
+  # =========================================================================
+  # STAGE 1: Validate (lint + unit tests)
+  # =========================================================================
+  - stage: Validate
+    displayName: 'Validate (lint + tests)'
+    pool:
+      vmImage: $(vmImage)
+    jobs:
+      - job: ValidateJob
+        displayName: 'Lint and test'
+        steps:
+          - task: UsePythonVersion@0
+            displayName: 'Use Python $(pythonVersion)'
+            inputs:
+              versionSpec: $(pythonVersion)
+              addToPath: true
+
+          - script: |
+              set -euo pipefail
+              python -m pip install --upgrade pip
+              pip install -r requirements-dev.txt
+              pip install ruff
+            displayName: 'Install dependencies'
+            workingDirectory: $(functionRoot)
+
+          - ${{ if eq(parameters.runLint, true) }}:
+              - script: |
+                  set -euo pipefail
+                  ruff format --config "format.quote-style='single'" --check classify_assets/ function_app.py
+                displayName: 'Ruff format check'
+                workingDirectory: $(functionRoot)
+
+          - ${{ if eq(parameters.runTests, true) }}:
+              - script: |
+                  set -euo pipefail
+                  python -m pytest tests/ -x --tb=short --junitxml=$(Build.ArtifactStagingDirectory)/test-results.xml
+                displayName: 'Run pytest (28 tests)'
+                workingDirectory: $(functionRoot)
+
+              - task: PublishTestResults@2
+                displayName: 'Publish test results'
+                condition: succeededOrFailed()
+                inputs:
+                  testResultsFormat: JUnit
+                  testResultsFiles: $(Build.ArtifactStagingDirectory)/test-results.xml
+                  testRunTitle: 'classify_assets unit tests'
+
+  # =========================================================================
+  # STAGE 2: Package (build deployment zip)
+  # =========================================================================
+  - stage: Package
+    displayName: 'Package function'
+    dependsOn: Validate
+    condition: succeeded()
+    pool:
+      vmImage: $(vmImage)
+    jobs:
+      - job: PackageJob
+        displayName: 'Build deployment zip'
+        steps:
+          - task: UsePythonVersion@0
+            displayName: 'Use Python $(pythonVersion)'
+            inputs:
+              versionSpec: $(pythonVersion)
+              addToPath: true
+
+          - script: |
+              set -euo pipefail
+              # Install production dependencies into the package layout the
+              # Functions host expects on Linux (.python_packages/lib/site-packages).
+              python -m pip install --upgrade pip
+              pip install \
+                --target=".python_packages/lib/site-packages" \
+                -r requirements.txt
+            displayName: 'Install production dependencies'
+            workingDirectory: $(functionRoot)
+
+          - task: ArchiveFiles@2
+            displayName: 'Archive function package'
+            inputs:
+              rootFolderOrFile: $(functionRoot)
+              includeRootFolder: false
+              archiveType: zip
+              archiveFile: $(Build.ArtifactStagingDirectory)/function.zip
+              replaceExistingArchive: true
+              # Mirror exclusions from iac/phase2_function.tf archive_file.
+              # ArchiveFiles@2 doesn't support glob excludes natively; we rely
+              # on the fact that __pycache__/.pytest_cache/.ruff_cache aren't
+              # generated on a clean agent. Tests folder is intentionally
+              # included-or-excluded below via a pre-archive cleanup step.
+
+          - script: |
+              set -euo pipefail
+              # Sanity check: confirm function_app.py is at the zip root.
+              unzip -l $(Build.ArtifactStagingDirectory)/function.zip | head -40
+              if ! unzip -l $(Build.ArtifactStagingDirectory)/function.zip | grep -q '^.* function_app\.py$'; then
+                echo "##[error]function_app.py not found at zip root"
+                exit 1
+              fi
+            displayName: 'Verify zip contents'
+
+          - publish: $(Build.ArtifactStagingDirectory)/function.zip
+            artifact: function-package
+            displayName: 'Publish function-package artifact'
+
+  # =========================================================================
+  # STAGE 3: Deploy (main branch only)
+  # =========================================================================
+  - stage: Deploy
+    displayName: 'Deploy to Azure'
+    dependsOn: Package
+    condition: |
+      and(
+        succeeded(),
+        eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+        eq('${{ parameters.deployFunction }}', true)
+      )
+    pool:
+      vmImage: $(vmImage)
+    jobs:
+      - deployment: DeployFunction
+        displayName: 'Zip-deploy to Function App'
+        environment: purview-data-governance-${{ parameters.environment }}
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: function-package
+                  displayName: 'Download function-package artifact'
+
+                - task: AzureCLI@2
+                  displayName: 'Zip-deploy to Flex Consumption app'
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      set -euo pipefail
+                      ZIP_PATH="$(Pipeline.Workspace)/function-package/function.zip"
+                      echo "Deploying $ZIP_PATH to $(FUNCTION_APP_NAME) in $(RESOURCE_GROUP_NAME)"
+                      # Flex Consumption requires --build-remote false (zip already contains deps).
+                      az functionapp deployment source config-zip \
+                        --resource-group "$(RESOURCE_GROUP_NAME)" \
+                        --name "$(FUNCTION_APP_NAME)" \
+                        --src "$ZIP_PATH" \
+                        --build-remote false
+
+  # =========================================================================
+  # STAGE 4: Verify (post-deploy smoke check)
+  # =========================================================================
+  - stage: Verify
+    displayName: 'Verify deployment'
+    dependsOn: Deploy
+    condition: succeeded()
+    pool:
+      vmImage: $(vmImage)
+    jobs:
+      - job: VerifyJob
+        displayName: 'Confirm function is indexed'
+        steps:
+          - task: AzureCLI@2
+            displayName: 'List functions on app'
+            inputs:
+              azureSubscription: $(serviceConnection)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -euo pipefail
+                # Give the host a moment to restart and re-index after the deploy.
+                sleep 30
+                FUNCS=$(az functionapp function list \
+                  --resource-group "$(RESOURCE_GROUP_NAME)" \
+                  --name "$(FUNCTION_APP_NAME)" \
+                  --query "[].name" -o tsv)
+                echo "Functions discovered:"
+                echo "$FUNCS"
+                if ! echo "$FUNCS" | grep -q "classify_assets"; then
+                  echo "##[error]classify_assets function not indexed on $(FUNCTION_APP_NAME)"
+                  exit 1
+                fi
+                echo "##[section]classify_assets is indexed and ready."

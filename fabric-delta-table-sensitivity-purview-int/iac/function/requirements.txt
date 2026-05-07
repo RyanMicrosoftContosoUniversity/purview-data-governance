@@ -1,0 +1,4 @@
+azure-functions>=1.18.0
+azure-identity>=1.17.0
+deltalake>=0.21.0
+requests>=2.32.0
