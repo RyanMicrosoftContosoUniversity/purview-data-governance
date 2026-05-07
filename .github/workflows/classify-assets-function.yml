@@ -142,18 +142,19 @@ jobs:
 
       - name: Terraform init
         env:
-          # No ARM_USE_OIDC: the microsoft/fabric provider hardcodes use_cli=true
-          # and rejects the combination. azure/login@v2 already authenticated az
-          # CLI with the OIDC token, so both providers can use CLI auth.
-          # ARM_USE_AZUREAD makes the azurerm backend use AAD (not account keys)
-          # to read tfstate, leveraging the SP's Storage Blob Data Contributor.
+          # azurerm provider: must use OIDC (rejects CLI auth for SPs).
+          ARM_USE_OIDC: 'true'
           ARM_USE_AZUREAD: 'true'
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          # microsoft/fabric provider: hardcoded use_cli=true in providers.tf.
+          # It also reads ARM_USE_OIDC, which would conflict. Override with
+          # FABRIC_* env vars so it ignores the azurerm OIDC settings.
+          FABRIC_USE_OIDC: 'false'
+          FABRIC_USE_MSI: 'false'
+          FABRIC_USE_CLI: 'true'
         run: |
-          # Strip any stray CR/whitespace from GitHub vars (defensive — pasted
-          # values sometimes carry \r\n that breaks net/url parsing).
           export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
           export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
           export ARM_SUBSCRIPTION_ID="$(echo -n "$ARM_SUBSCRIPTION_ID" | tr -d '[:space:]')"
@@ -162,10 +163,14 @@ jobs:
       - name: Terraform plan (detailed exit code)
         id: plan
         env:
+          ARM_USE_OIDC: 'true'
           ARM_USE_AZUREAD: 'true'
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          FABRIC_USE_OIDC: 'false'
+          FABRIC_USE_MSI: 'false'
+          FABRIC_USE_CLI: 'true'
         run: |
           export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
           export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
