@@ -142,7 +142,11 @@ jobs:
 
       - name: Terraform init
         env:
-          ARM_USE_OIDC: 'true'
+          # No ARM_USE_OIDC: the microsoft/fabric provider hardcodes use_cli=true
+          # and rejects the combination. azure/login@v2 already authenticated az
+          # CLI with the OIDC token, so both providers can use CLI auth.
+          # ARM_USE_AZUREAD makes the azurerm backend use AAD (not account keys)
+          # to read tfstate, leveraging the SP's Storage Blob Data Contributor.
           ARM_USE_AZUREAD: 'true'
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
@@ -158,7 +162,6 @@ jobs:
       - name: Terraform plan (detailed exit code)
         id: plan
         env:
-          ARM_USE_OIDC: 'true'
           ARM_USE_AZUREAD: 'true'
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
