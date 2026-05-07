@@ -175,22 +175,17 @@ jobs:
           export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
           export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
           export ARM_SUBSCRIPTION_ID="$(echo -n "$ARM_SUBSCRIPTION_ID" | tr -d '[:space:]')"
-          # Scope the plan to function-app-related infrastructure only.
-          # EXCLUSIONS and why:
-          # - fabric_* resources: federated SP has no Fabric workspace consent.
-          # - azurerm_function_app_flex_consumption.func: its app_settings
-          #   reference fabric_lakehouse.this.id, which forces a fabric
-          #   provider read during plan refresh and fails auth. The function
-          #   app config is instead validated by the dedicated
-          #   "Function app config check" step below using `az`, which is more
-          #   targeted at the bug class we care about (e.g., empty
-          #   AzureWebJobsStorage on Flex Consumption).
-          # - azurerm_storage_blob.function_zip: TF's archive_file regenerates
-          #   a hash from local source on every run, but the actual deploy uses
-          #   'az functionapp deployment source config-zip' (separate path).
-          #   The blob will always show drift on code changes — expected.
+          # Use -refresh=false to skip reading live Azure state. This avoids
+          # triggering the fabric provider (whose SP doesn't have Fabric
+          # workspace auth). We still catch the most important class of
+          # drift: divergence between TF code and last-applied state — i.e.,
+          # someone changed TF without running apply, or someone applied
+          # without committing. Out-of-band Azure portal changes are NOT
+          # caught here; the dedicated "Function app config check" step
+          # below uses `az` to verify the live function-app config directly,
+          # which targets the specific bug class that motivated this job.
           set +e
-          terraform plan -input=false -lock=false -detailed-exitcode -out=tfplan \
+          terraform plan -input=false -lock=false -refresh=false -detailed-exitcode -out=tfplan \
             -target=azurerm_storage_account.func \
             -target=azurerm_storage_container.deployments \
             -target=azurerm_log_analytics_workspace.func \
