@@ -146,7 +146,13 @@ jobs:
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-        run: terraform init -input=false
+        run: |
+          # Strip any stray CR/whitespace from GitHub vars (defensive — pasted
+          # values sometimes carry \r\n that breaks net/url parsing).
+          export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
+          export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
+          export ARM_SUBSCRIPTION_ID="$(echo -n "$ARM_SUBSCRIPTION_ID" | tr -d '[:space:]')"
+          terraform init -input=false
 
       - name: Terraform plan (detailed exit code)
         id: plan
@@ -156,6 +162,9 @@ jobs:
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         run: |
+          export ARM_CLIENT_ID="$(echo -n "$ARM_CLIENT_ID" | tr -d '[:space:]')"
+          export ARM_TENANT_ID="$(echo -n "$ARM_TENANT_ID" | tr -d '[:space:]')"
+          export ARM_SUBSCRIPTION_ID="$(echo -n "$ARM_SUBSCRIPTION_ID" | tr -d '[:space:]')"
           set +e
           terraform plan -input=false -lock=false -detailed-exitcode -out=tfplan
           rc=$?
