@@ -1,0 +1,24 @@
+.terraform/
+.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.backup
+.rendered/
+crash.log
+crash.*.log
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Build artifacts
+function.zip
+
+# Terraform plan files
+tfplan*
+*.tfplan
+
+# Linter caches
+function/.ruff_cache/
