@@ -143,6 +143,7 @@ jobs:
       - name: Terraform init
         env:
           ARM_USE_OIDC: 'true'
+          ARM_USE_AZUREAD: 'true'
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
@@ -158,6 +159,7 @@ jobs:
         id: plan
         env:
           ARM_USE_OIDC: 'true'
+          ARM_USE_AZUREAD: 'true'
           ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
           ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
           ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
