@@ -1,1 +1,28 @@
 docs/domains.excalidraw
+
+# Azure Functions
+local.settings.json
+__pycache__/
+.python_packages/
+.venv/
+*.pyc
+
+# Environment files with secrets
+scripts/fabric_audit_env.env
+*.env
+!*.env.example
+*.log
+do_not_commit/*
+terraform-notes/*
+
+
+# output files
+scripts\cost-analysis\output
+
+
+
+# environment files
+.vscode/settings.json
+
+
+do_not_commit/*

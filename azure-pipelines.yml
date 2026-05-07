@@ -1,0 +1,418 @@
+# =============================================================================
+# Azure DevOps Multi-Stage Pipeline
+# Purview-to-Fabric Self-Service Access Workflow
+#
+# Stages:
+#   1. Validate  — Lint Bicep, compile Python, parse JSON
+#   2. Infra     — Deploy Azure resources via Bicep
+#   3. AppReg    — Create/update App Registration + Key Vault secret
+#   4. Functions — Build and deploy Azure Functions (Python)
+#   5. Workflow  — Deploy Purview workflow definition
+# =============================================================================
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infra/**
+      - functions/**
+      - workflows/**
+      - scripts/setup-app-registration.ps1
+      - scripts/deploy-workflow.py
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infra/**
+      - functions/**
+      - workflows/**
+
+# ---------------------------------------------------------------------------
+# Parameters — selectable at queue time
+# ---------------------------------------------------------------------------
+parameters:
+  - name: environment
+    displayName: Target Environment
+    type: string
+    default: dev
+    values:
+      - dev
+      - staging
+      - prod
+
+  - name: deployInfra
+    displayName: Deploy Infrastructure (Bicep)
+    type: boolean
+    default: true
+
+  - name: deployFunctions
+    displayName: Deploy Azure Functions
+    type: boolean
+    default: true
+
+  - name: deployWorkflow
+    displayName: Deploy Purview Workflow
+    type: boolean
+    default: true
+
+  - name: runAppRegistration
+    displayName: Run App Registration Setup
+    type: boolean
+    default: false
+
+# ---------------------------------------------------------------------------
+# Variables — override per-environment via variable groups
+# ---------------------------------------------------------------------------
+variables:
+  - group: purview-fabric-access-${{ parameters.environment }}
+  # Expected variables in the group:
+  #   AZURE_SUBSCRIPTION_ID      - Azure subscription for deployment
+  #   RESOURCE_GROUP_NAME        - e.g. rg-purview-fabric-access-dev
+  #   LOCATION                   - e.g. eastus2
+  #   PURVIEW_ACCOUNT_NAME       - Purview account name
+  #   FABRIC_WORKSPACE_ID        - Target Fabric workspace GUID
+  #   PURVIEW_COLLECTION_ID      - Purview collection ID for workflow binding
+  #   APPROVER_EMAIL             - Workflow approver email
+  #   KEY_VAULT_NAME             - (set after infra deploy or pre-existing)
+
+  - name: environmentName
+    value: ${{ parameters.environment }}
+  - name: serviceConnection
+    value: sc-purview-fabric-${{ parameters.environment }}
+  - name: pythonVersion
+    value: '3.11'
+  - name: functionAppFolder
+    value: functions
+
+# ---------------------------------------------------------------------------
+# Stage 1: Validate
+# ---------------------------------------------------------------------------
+stages:
+  - stage: Validate
+    displayName: '🔍 Validate'
+    jobs:
+      - job: ValidateBicep
+        displayName: Validate Bicep Templates
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: AzureCLI@2
+            displayName: Lint and build Bicep
+            inputs:
+              azureSubscription: $(serviceConnection)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                echo "=== Bicep Lint ==="
+                az bicep lint --file infra/main.bicep
+
+                echo "=== Bicep Build ==="
+                az bicep build --file infra/main.bicep --stdout > /dev/null
+                echo "✅ Bicep templates are valid"
+
+          - task: AzureCLI@2
+            displayName: What-if deployment preview
+            inputs:
+              azureSubscription: $(serviceConnection)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                az deployment group what-if \
+                  --resource-group "$(RESOURCE_GROUP_NAME)" \
+                  --template-file infra/main.bicep \
+                  --parameters infra/parameters.json \
+                  --parameters environmentName=$(environmentName)
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+      - job: ValidatePython
+        displayName: Validate Python
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(pythonVersion)
+
+          - script: |
+              set -e
+              echo "=== Compile Check ==="
+              find functions/ -name "*.py" | while read f; do
+                python -m py_compile "$f" && echo "  ✅ $f"
+              done
+
+              echo ""
+              echo "=== Install dependencies for import check ==="
+              pip install -r functions/requirements.txt --quiet
+
+              echo ""
+              echo "=== Import Check (shared modules) ==="
+              cd functions
+              python -c "from shared.models import AccessRequestMessage, FabricRole, ProvisioningResult; print('  ✅ models')"
+              python -c "from shared.auth import get_spn_credentials, get_fabric_token; print('  ✅ auth')"
+              python -c "from shared.fabric_client import FabricClient; print('  ✅ fabric_client')"
+              python -c "from shared.purview_client import PurviewWorkflowClient; print('  ✅ purview_client')"
+            displayName: Compile and import check
+
+      - job: ValidateJSON
+        displayName: Validate JSON
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: |
+              set -e
+              echo "=== JSON Validation ==="
+              for f in \
+                functions/host.json \
+                functions/local.settings.json.example \
+                functions/servicenow_stub/create_ticket/function.json \
+                functions/servicenow_stub/approve_tickets/function.json \
+                functions/servicenow_stub/approval_callback/function.json \
+                functions/fabric_provisioner/provision_access/function.json \
+                workflows/access-request-workflow.json \
+                infra/parameters.json; do
+                python -c "import json; json.load(open('$f'))" && echo "  ✅ $f"
+              done
+            displayName: Parse all JSON files
+
+  # ---------------------------------------------------------------------------
+  # Stage 2: Infrastructure
+  # ---------------------------------------------------------------------------
+  - stage: Infrastructure
+    displayName: '🏗️ Infrastructure'
+    dependsOn: Validate
+    condition: and(succeeded(), eq('${{ parameters.deployInfra }}', 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - deployment: DeployInfra
+        displayName: Deploy Bicep
+        environment: purview-fabric-${{ parameters.environment }}
+        pool:
+          vmImage: ubuntu-latest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: AzureCLI@2
+                  displayName: Ensure resource group
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      az group create \
+                        --name "$(RESOURCE_GROUP_NAME)" \
+                        --location "$(LOCATION)" \
+                        --tags project=purview-fabric-access environment=$(environmentName) \
+                        --output none
+
+                - task: AzureCLI@2
+                  name: BicepDeploy
+                  displayName: Deploy Bicep templates
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      set -e
+                      DEPLOYMENT_NAME="pvfab-$(environmentName)-$(Build.BuildId)"
+
+                      OUTPUTS=$(az deployment group create \
+                        --name "$DEPLOYMENT_NAME" \
+                        --resource-group "$(RESOURCE_GROUP_NAME)" \
+                        --template-file infra/main.bicep \
+                        --parameters infra/parameters.json \
+                        --parameters environmentName=$(environmentName) \
+                        --query "properties.outputs" \
+                        --output json)
+
+                      echo "=== Deployment Outputs ==="
+                      echo "$OUTPUTS" | jq .
+
+                      # Extract outputs for downstream stages
+                      FUNC_APP_NAME=$(echo "$OUTPUTS" | jq -r '.functionAppName.value')
+                      FUNC_HOSTNAME=$(echo "$OUTPUTS" | jq -r '.functionAppHostname.value')
+                      KV_NAME=$(echo "$OUTPUTS" | jq -r '.keyVaultName.value')
+                      STORAGE_NAME=$(echo "$OUTPUTS" | jq -r '.storageAccountName.value')
+
+                      echo "##vso[task.setvariable variable=FUNC_APP_NAME;isOutput=true]$FUNC_APP_NAME"
+                      echo "##vso[task.setvariable variable=FUNC_HOSTNAME;isOutput=true]$FUNC_HOSTNAME"
+                      echo "##vso[task.setvariable variable=KV_NAME;isOutput=true]$KV_NAME"
+                      echo "##vso[task.setvariable variable=STORAGE_NAME;isOutput=true]$STORAGE_NAME"
+
+                      echo "✅ Infrastructure deployed"
+                      echo "  Function App: $FUNC_APP_NAME"
+                      echo "  Hostname:     $FUNC_HOSTNAME"
+                      echo "  Key Vault:    $KV_NAME"
+                      echo "  Storage:      $STORAGE_NAME"
+
+  # ---------------------------------------------------------------------------
+  # Stage 3: App Registration (manual trigger only)
+  # ---------------------------------------------------------------------------
+  - stage: AppRegistration
+    displayName: '🔑 App Registration'
+    dependsOn: Infrastructure
+    condition: and(succeeded(), eq('${{ parameters.runAppRegistration }}', 'true'))
+    jobs:
+      - deployment: SetupAppReg
+        displayName: Create App Registration
+        environment: purview-fabric-${{ parameters.environment }}
+        pool:
+          vmImage: windows-latest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: AzurePowerShell@5
+                  displayName: Run app registration setup
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    ScriptType: FilePath
+                    ScriptPath: scripts/setup-app-registration.ps1
+                    ScriptArguments: >-
+                      -KeyVaultName "$(KEY_VAULT_NAME)"
+                      -FabricWorkspaceId "$(FABRIC_WORKSPACE_ID)"
+                    azurePowerShellVersion: LatestVersion
+                    pwsh: true
+
+  # ---------------------------------------------------------------------------
+  # Stage 4: Deploy Azure Functions
+  # ---------------------------------------------------------------------------
+  - stage: Functions
+    displayName: '⚡ Azure Functions'
+    dependsOn: Infrastructure
+    condition: and(succeeded(), eq('${{ parameters.deployFunctions }}', 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+    variables:
+      FUNC_APP_NAME: $[ stageDependencies.Infrastructure.DeployInfra.outputs['DeployInfra.BicepDeploy.FUNC_APP_NAME'] ]
+    jobs:
+      - deployment: DeployFunctions
+        displayName: Build and Deploy Functions
+        environment: purview-fabric-${{ parameters.environment }}
+        pool:
+          vmImage: ubuntu-latest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+
+                - script: |
+                    set -e
+                    cd $(functionAppFolder)
+                    python -m pip install --upgrade pip
+                    pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+                  displayName: Install Python dependencies
+
+                - task: ArchiveFiles@2
+                  displayName: Package Functions
+                  inputs:
+                    rootFolderOrFile: $(functionAppFolder)
+                    includeRootFolder: false
+                    archiveType: zip
+                    archiveFile: $(Build.ArtifactStagingDirectory)/functions.zip
+                    replaceExistingArchive: true
+
+                - task: AzureFunctionApp@2
+                  displayName: Deploy to Azure Functions
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    appType: functionAppLinux
+                    appName: $(FUNC_APP_NAME)
+                    package: $(Build.ArtifactStagingDirectory)/functions.zip
+                    runtimeStack: PYTHON|3.11
+                    deploymentMethod: zipDeploy
+
+                - task: AzureCLI@2
+                  displayName: Verify function deployment
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      set -e
+                      echo "=== Listing deployed functions ==="
+                      az functionapp function list \
+                        --name "$(FUNC_APP_NAME)" \
+                        --resource-group "$(RESOURCE_GROUP_NAME)" \
+                        --query "[].{name:name, language:language}" \
+                        --output table
+
+                      echo ""
+                      echo "=== Health check ==="
+                      HOSTNAME=$(az functionapp show \
+                        --name "$(FUNC_APP_NAME)" \
+                        --resource-group "$(RESOURCE_GROUP_NAME)" \
+                        --query "defaultHostName" -o tsv)
+                      HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://$HOSTNAME/api/servicenow/ticket" -X POST -H "Content-Type: application/json" -d '{}' || echo "000")
+                      echo "  Stub endpoint returned HTTP $HTTP_CODE (400 = running, auth needed = 401)"
+
+  # ---------------------------------------------------------------------------
+  # Stage 5: Deploy Purview Workflow
+  # ---------------------------------------------------------------------------
+  - stage: Workflow
+    displayName: '🔄 Purview Workflow'
+    dependsOn:
+      - Infrastructure
+      - Functions
+    condition: and(succeeded(), eq('${{ parameters.deployWorkflow }}', 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+    variables:
+      FUNC_HOSTNAME: $[ stageDependencies.Infrastructure.DeployInfra.outputs['DeployInfra.BicepDeploy.FUNC_HOSTNAME'] ]
+    jobs:
+      - deployment: DeployWorkflow
+        displayName: Deploy Workflow Definition
+        environment: purview-fabric-${{ parameters.environment }}
+        pool:
+          vmImage: ubuntu-latest
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+
+                - task: UsePythonVersion@0
+                  inputs:
+                    versionSpec: $(pythonVersion)
+
+                - script: |
+                    pip install azure-identity requests --quiet
+                  displayName: Install deploy script dependencies
+
+                - task: AzureCLI@2
+                  displayName: Deploy Purview workflow
+                  inputs:
+                    azureSubscription: $(serviceConnection)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    addSpnToEnvironment: true
+                    inlineScript: |
+                      set -e
+
+                      # AzureCLI@2 with addSpnToEnvironment exposes:
+                      #   $servicePrincipalId, $servicePrincipalKey, $tenantId
+                      # DefaultAzureCredential will pick up the az login session
+
+                      echo "=== Deploying Purview Workflow ==="
+                      echo "  Purview Account: $(PURVIEW_ACCOUNT_NAME)"
+                      echo "  Function Host:   $(FUNC_HOSTNAME)"
+                      echo "  Approver:        $(APPROVER_EMAIL)"
+                      echo "  Collection:      $(PURVIEW_COLLECTION_ID)"
+
+                      python scripts/deploy-workflow.py \
+                        --purview-account "$(PURVIEW_ACCOUNT_NAME)" \
+                        --workflow-file workflows/access-request-workflow.json \
+                        --servicenow-url "https://$(FUNC_HOSTNAME)" \
+                        --approver-email "$(APPROVER_EMAIL)" \
+                        --collection-id "$(PURVIEW_COLLECTION_ID)"

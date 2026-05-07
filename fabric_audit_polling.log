@@ -1,0 +1,1783 @@
+2025-12-18 15:25:12,362 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:25:33,047 - INFO - Successfully obtained access token.
+2025-12-18 15:25:53,903 - WARNING - Subscription response: 401 - {"error":{"code":"AF10001","message":"The permission set () sent in the request does not include the expected permission."}}
+2025-12-18 15:26:10,391 - ERROR - Error listing available content: 401 Client Error: Unauthorized for url: https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T20%3A10%3A55&endTime=2025-12-18T20%3A25%3A55
+2025-12-18 15:26:13,212 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-18 15:31:23,747 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:31:30,811 - INFO - Successfully obtained access token.
+2025-12-18 15:31:39,634 - WARNING - Subscription response: 401 - {"error":{"code":"AF10001","message":"The permission set () sent in the request does not include the expected permission."}}
+2025-12-18 15:32:39,836 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:32:39,850 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 15:32:40,091 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/v2.0/token HTTP/1.1" 200 1668
+2025-12-18 15:32:40,103 - INFO - Successfully obtained access token.
+2025-12-18 15:32:40,104 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 15:32:40,107 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:32:40,280 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 401 124
+2025-12-18 15:32:40,282 - ERROR - Unauthorized (401): {"error":{"code":"AF10001","message":"The permission set () sent in the request does not include the expected permission."}}
+2025-12-18 15:32:40,283 - ERROR - Check: TENANT_ID, CLIENT_ID, CLIENT_SECRET in your .env file
+2025-12-18 15:32:40,288 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:32:40,487 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T20%3A17%3A40&endTime=2025-12-18T20%3A32%3A40 HTTP/1.1" 401 124
+2025-12-18 15:32:40,489 - ERROR - Error listing available content: 401 Client Error: Unauthorized for url: https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T20%3A17%3A40&endTime=2025-12-18T20%3A32%3A40
+2025-12-18 15:32:40,489 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-18 15:38:14,067 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:38:14,080 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 15:38:15,207 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1766
+2025-12-18 15:38:15,217 - INFO - Successfully obtained access token.
+2025-12-18 15:38:15,218 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 15:38:15,221 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:38:15,469 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 401 124
+2025-12-18 15:38:15,471 - ERROR - Unauthorized (401): {"error":{"code":"AF10001","message":"The permission set () sent in the request does not include the expected permission."}}
+2025-12-18 15:38:15,471 - ERROR - Check: TENANT_ID, CLIENT_ID, CLIENT_SECRET in your .env file
+2025-12-18 15:38:15,474 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:38:15,839 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T20%3A23%3A15&endTime=2025-12-18T20%3A38%3A15 HTTP/1.1" 401 124
+2025-12-18 15:38:15,841 - ERROR - Error listing available content: 401 Client Error: Unauthorized for url: https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T20%3A23%3A15&endTime=2025-12-18T20%3A38%3A15
+2025-12-18 15:38:15,841 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-18 15:39:47,832 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:39:47,846 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 15:39:48,192 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1834
+2025-12-18 15:39:48,203 - INFO - Successfully obtained access token.
+2025-12-18 15:39:48,204 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 15:39:48,207 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:39:48,916 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 200 65
+2025-12-18 15:39:48,917 - INFO - Successfully ensured subscription to Audit.General.
+2025-12-18 15:39:48,920 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:39:49,522 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T20%3A24%3A48&endTime=2025-12-18T20%3A39%3A48 HTTP/1.1" 200 411
+2025-12-18 15:39:49,524 - INFO - Retrieved 1 content blobs for 2025-12-18T20:24:48 to 2025-12-18T20:39:48.
+2025-12-18 15:39:49,524 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-18 15:55:30,140 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:55:30,151 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 15:55:30,860 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1835
+2025-12-18 15:55:30,869 - INFO - Successfully obtained access token.
+2025-12-18 15:55:30,870 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 15:55:30,875 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:55:31,487 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 400 97
+2025-12-18 15:55:31,489 - WARNING - Subscription response: 400 - {"error":{"code":"AF20024","message":"The subscription is already enabled. No property change."}}
+2025-12-18 15:55:31,489 - INFO - Proceeding with audit log collection.
+2025-12-18 15:55:31,495 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:55:32,037 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T20%3A40%3A31&endTime=2025-12-18T20%3A55%3A31 HTTP/1.1" 200 411
+2025-12-18 15:55:32,038 - INFO - Retrieved 1 content blobs for 2025-12-18T20:40:31 to 2025-12-18T20:55:31.
+2025-12-18 15:55:32,038 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-18 15:57:03,145 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:57:03,156 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 15:57:03,793 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1836
+2025-12-18 15:57:03,801 - INFO - Successfully obtained access token.
+2025-12-18 15:57:03,801 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 15:57:03,806 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:57:04,697 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 400 97
+2025-12-18 15:57:04,699 - WARNING - Subscription response: 400 - {"error":{"code":"AF20024","message":"The subscription is already enabled. No property change."}}
+2025-12-18 15:57:04,699 - INFO - Proceeding with audit log collection.
+2025-12-18 15:57:04,704 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:57:05,925 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T10%3A57%3A04&endTime=2025-12-18T20%3A57%3A04 HTTP/1.1" 200 7381
+2025-12-18 15:57:05,926 - INFO - Retrieved 18 content blobs for 2025-12-18T10:57:04 to 2025-12-18T20:57:04.
+2025-12-18 15:57:05,926 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-18 15:58:17,981 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:58:17,993 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 15:58:18,618 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1836
+2025-12-18 15:58:18,626 - INFO - Successfully obtained access token.
+2025-12-18 15:58:18,627 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 15:58:18,630 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:58:19,254 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 400 97
+2025-12-18 15:58:19,256 - WARNING - Subscription response: 400 - {"error":{"code":"AF20024","message":"The subscription is already enabled. No property change."}}
+2025-12-18 15:58:19,256 - INFO - Proceeding with audit log collection.
+2025-12-18 15:58:19,263 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:58:20,429 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T10%3A58%3A19&endTime=2025-12-18T20%3A58%3A19 HTTP/1.1" 200 7381
+2025-12-18 15:58:20,430 - INFO - Retrieved 18 content blobs for 2025-12-18T10:58:19 to 2025-12-18T20:58:19.
+2025-12-18 15:58:20,431 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-18 15:58:40,848 - INFO - Starting Fabric audit log ingestion
+2025-12-18 15:58:40,860 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 15:58:41,484 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1836
+2025-12-18 15:58:41,494 - INFO - Successfully obtained access token.
+2025-12-18 15:58:41,495 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 15:58:41,500 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:58:42,092 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 400 97
+2025-12-18 15:58:42,093 - WARNING - Subscription response: 400 - {"error":{"code":"AF20024","message":"The subscription is already enabled. No property change."}}
+2025-12-18 15:58:42,094 - INFO - Proceeding with audit log collection.
+2025-12-18 15:58:42,099 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 15:58:43,332 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T10%3A58%3A42&endTime=2025-12-18T20%3A58%3A42 HTTP/1.1" 200 7381
+2025-12-18 15:58:43,333 - INFO - Retrieved 18 content blobs for 2025-12-18T10:58:42 to 2025-12-18T20:58:42.
+2025-12-18 16:00:10,158 - INFO - Starting Fabric audit log ingestion
+2025-12-18 16:00:10,171 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 16:00:10,819 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1836
+2025-12-18 16:00:10,827 - INFO - Successfully obtained access token.
+2025-12-18 16:00:10,828 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 16:00:10,834 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:00:11,458 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 400 97
+2025-12-18 16:00:11,459 - WARNING - Subscription response: 400 - {"error":{"code":"AF20024","message":"The subscription is already enabled. No property change."}}
+2025-12-18 16:00:11,459 - INFO - Proceeding with audit log collection.
+2025-12-18 16:00:11,463 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:00:12,700 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T11%3A00%3A11&endTime=2025-12-18T21%3A00%3A11 HTTP/1.1" 200 7791
+2025-12-18 16:00:12,702 - INFO - Retrieved 19 content blobs for 2025-12-18T11:00:11 to 2025-12-18T21:00:11.
+2025-12-18 16:00:22,529 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:00:23,657 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218135637676002092$20251218152852193030213$audit_general$Audit_General$na0010 HTTP/1.1" 200 109061
+2025-12-18 16:00:27,028 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218135637676002092$20251218152852193030213$audit_general$Audit_General$na0010.
+2025-12-18 16:09:53,969 - INFO - Starting Fabric audit log ingestion
+2025-12-18 16:09:53,981 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-18 16:09:54,759 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1835
+2025-12-18 16:09:54,768 - INFO - Successfully obtained access token.
+2025-12-18 16:09:54,769 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-18 16:09:54,774 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:09:55,677 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 400 97
+2025-12-18 16:09:55,678 - WARNING - Subscription response: 400 - {"error":{"code":"AF20024","message":"The subscription is already enabled. No property change."}}
+2025-12-18 16:09:55,679 - INFO - Proceeding with audit log collection.
+2025-12-18 16:09:55,684 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:09:56,329 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-18T11%3A09%3A55&endTime=2025-12-18T21%3A09%3A55 HTTP/1.1" 200 7791
+2025-12-18 16:09:56,330 - INFO - Retrieved 19 content blobs for 2025-12-18T11:09:55 to 2025-12-18T21:09:55.
+2025-12-18 16:09:59,434 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:00,414 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218135637676002092$20251218152852193030213$audit_general$Audit_General$na0010 HTTP/1.1" 200 109061
+2025-12-18 16:10:00,461 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218135637676002092$20251218152852193030213$audit_general$Audit_General$na0010.
+2025-12-18 16:10:16,539 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A06.801432.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '113284'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'f393712f-dc55-11f0-86fa-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:16,549 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:17,316 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A06.801432.json HTTP/1.1" 201 0
+2025-12-18 16:10:17,343 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:16 GMT'
+    'ETag': '"0x8DE3E79D79C42F8"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '78151723-501e-0089-4462-70a0e2000000'
+    'x-ms-client-request-id': 'f393712f-dc55-11f0-86fa-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:15 GMT'
+2025-12-18 16:10:18,628 - INFO - Written 92 events to blob storage: audit-logs/2025-12-18T16:10:06.801432.json
+2025-12-18 16:10:32,445 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:34,349 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218152959536051097$20251218154345950005552$audit_general$Audit_General$na0010 HTTP/1.1" 200 235564
+2025-12-18 16:10:34,418 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218152959536051097$20251218154345950005552$audit_general$Audit_General$na0010.
+2025-12-18 16:10:43,746 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A43.736593.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '245820'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '03cb5be5-dc56-11f0-995f-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:43,755 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:44,476 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A43.736593.json HTTP/1.1" 201 0
+2025-12-18 16:10:44,481 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:43 GMT'
+    'ETag': '"0x8DE3E79E7CCA2C0"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'ccf1edb5-001e-0002-7162-70a48f000000'
+    'x-ms-client-request-id': '03cb5be5-dc56-11f0-995f-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:43 GMT'
+2025-12-18 16:10:44,484 - INFO - Written 235 events to blob storage: audit-logs/2025-12-18T16:10:43.736593.json
+2025-12-18 16:10:44,490 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:46,212 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218154554938030334$20251218161236936023200$audit_general$Audit_General$na0010 HTTP/1.1" 200 98281
+2025-12-18 16:10:46,256 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218154554938030334$20251218161236936023200$audit_general$Audit_General$na0010.
+2025-12-18 16:10:46,265 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A46.258781.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '102890'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '054bf159-dc56-11f0-b5cf-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:46,269 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:46,899 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A46.258781.json HTTP/1.1" 201 0
+2025-12-18 16:10:46,902 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:45 GMT'
+    'ETag': '"0x8DE3E79E93EDA58"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '707f12f7-201e-003a-3962-70004f000000'
+    'x-ms-client-request-id': '054bf159-dc56-11f0-b5cf-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:45 GMT'
+2025-12-18 16:10:46,904 - INFO - Written 105 events to blob storage: audit-logs/2025-12-18T16:10:46.258781.json
+2025-12-18 16:10:46,911 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:47,832 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218161355086035648$20251218163144327003568$audit_general$Audit_General$na0010 HTTP/1.1" 200 46618
+2025-12-18 16:10:47,854 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218161355086035648$20251218163144327003568$audit_general$Audit_General$na0010.
+2025-12-18 16:10:47,861 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A47.855591.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '48797'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '063f8619-dc56-11f0-b870-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:47,866 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:48,447 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A47.855591.json HTTP/1.1" 201 0
+2025-12-18 16:10:48,449 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:47 GMT'
+    'ETag': '"0x8DE3E79EA2B7258"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '7efde77f-901e-00b9-3762-701e2d000000'
+    'x-ms-client-request-id': '063f8619-dc56-11f0-b870-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:47 GMT'
+2025-12-18 16:10:48,452 - INFO - Written 49 events to blob storage: audit-logs/2025-12-18T16:10:47.855591.json
+2025-12-18 16:10:48,458 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:50,198 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218163259010027750$20251218165037940047321$audit_general$Audit_General$na0010 HTTP/1.1" 200 100547
+2025-12-18 16:10:50,247 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218163259010027750$20251218165037940047321$audit_general$Audit_General$na0010.
+2025-12-18 16:10:50,260 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A50.249777.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '105310'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '07ad5d7f-dc56-11f0-abdd-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:50,267 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:50,936 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A50.249777.json HTTP/1.1" 201 0
+2025-12-18 16:10:50,941 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:49 GMT'
+    'ETag': '"0x8DE3E79EBA6C350"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '9bb6e6e6-601e-00df-1762-70510d000000'
+    'x-ms-client-request-id': '07ad5d7f-dc56-11f0-abdd-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:49 GMT'
+2025-12-18 16:10:50,944 - INFO - Written 108 events to blob storage: audit-logs/2025-12-18T16:10:50.249777.json
+2025-12-18 16:10:50,951 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:52,893 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218165140796031055$20251218170849552009217$audit_general$Audit_General$na0010 HTTP/1.1" 200 33107
+2025-12-18 16:10:52,913 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218165140796031055$20251218170849552009217$audit_general$Audit_General$na0010.
+2025-12-18 16:10:52,920 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A52.915591.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '34640'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '09436929-dc56-11f0-a396-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:52,924 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:53,517 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A52.915591.json HTTP/1.1" 201 0
+2025-12-18 16:10:53,521 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:52 GMT'
+    'ETag': '"0x8DE3E79ED30FC60"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'e45f70db-301e-00fd-2f62-709412000000'
+    'x-ms-client-request-id': '09436929-dc56-11f0-a396-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:52 GMT'
+2025-12-18 16:10:53,523 - INFO - Written 37 events to blob storage: audit-logs/2025-12-18T16:10:52.915591.json
+2025-12-18 16:10:53,528 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:54,576 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218171110948012200$20251218172755509056687$audit_general$Audit_General$na0010 HTTP/1.1" 200 116778
+2025-12-18 16:10:54,626 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218171110948012200$20251218172755509056687$audit_general$Audit_General$na0010.
+2025-12-18 16:10:54,639 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A54.629231.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '122303'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0a4983a0-dc56-11f0-99f5-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:54,647 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:55,296 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A54.629231.json HTTP/1.1" 201 0
+2025-12-18 16:10:55,299 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:54 GMT'
+    'ETag': '"0x8DE3E79EE404640"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '15ed1306-f01e-0090-0c62-702059000000'
+    'x-ms-client-request-id': '0a4983a0-dc56-11f0-99f5-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:53 GMT'
+2025-12-18 16:10:55,301 - INFO - Written 124 events to blob storage: audit-logs/2025-12-18T16:10:54.629231.json
+2025-12-18 16:10:55,306 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:56,103 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218172831405001367$20251218174540681053757$audit_general$Audit_General$na0010 HTTP/1.1" 200 45870
+2025-12-18 16:10:56,127 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218172831405001367$20251218174540681053757$audit_general$Audit_General$na0010.
+2025-12-18 16:10:56,137 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A56.130200.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '48061'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0b2e4190-dc56-11f0-8b42-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:56,146 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:56,783 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A56.130200.json HTTP/1.1" 201 0
+2025-12-18 16:10:56,787 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:55 GMT'
+    'ETag': '"0x8DE3E79EF22F0DC"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'aa275042-201e-00e1-4162-70c672000000'
+    'x-ms-client-request-id': '0b2e4190-dc56-11f0-8b42-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:54 GMT'
+2025-12-18 16:10:56,790 - INFO - Written 49 events to blob storage: audit-logs/2025-12-18T16:10:56.130200.json
+2025-12-18 16:10:56,799 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:10:57,760 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218174659016054582$20251218181120283014777$audit_general$Audit_General$na0010 HTTP/1.1" 200 98604
+2025-12-18 16:10:57,796 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218174659016054582$20251218181120283014777$audit_general$Audit_General$na0010.
+2025-12-18 16:10:57,806 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A57.798327.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '103245'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0c2cedc5-dc56-11f0-b48b-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:10:57,813 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:10:58,473 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A10%3A57.798327.json HTTP/1.1" 201 0
+2025-12-18 16:10:58,478 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:57 GMT'
+    'ETag': '"0x8DE3E79F0251A38"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '783df440-d01e-0087-5a62-708952000000'
+    'x-ms-client-request-id': '0c2cedc5-dc56-11f0-b48b-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:56 GMT'
+2025-12-18 16:10:58,480 - INFO - Written 106 events to blob storage: audit-logs/2025-12-18T16:10:57.798327.json
+2025-12-18 16:10:58,489 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:00,100 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218181157238030654$20251218182854134009956$audit_general$Audit_General$na0010 HTTP/1.1" 200 87818
+2025-12-18 16:11:00,141 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218181157238030654$20251218182854134009956$audit_general$Audit_General$na0010.
+2025-12-18 16:11:00,153 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A00.144461.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '91951'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0d92ef89-dc56-11f0-96fa-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:00,157 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:00,793 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A00.144461.json HTTP/1.1" 201 0
+2025-12-18 16:11:00,797 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:10:59 GMT'
+    'ETag': '"0x8DE3E79F18706C4"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '16569d39-101e-0098-4d62-703a56000000'
+    'x-ms-client-request-id': '0d92ef89-dc56-11f0-96fa-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:10:59 GMT'
+2025-12-18 16:11:00,799 - INFO - Written 94 events to blob storage: audit-logs/2025-12-18T16:11:00.144461.json
+2025-12-18 16:11:00,807 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:02,627 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218182854383009969$20251218184453300038876$audit_general$Audit_General$na0010 HTTP/1.1" 200 39301
+2025-12-18 16:11:02,648 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218182854383009969$20251218184453300038876$audit_general$Audit_General$na0010.
+2025-12-18 16:11:02,656 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A02.651506.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '41164'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '0f10f42e-dc56-11f0-bb62-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:02,665 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:03,338 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A02.651506.json HTTP/1.1" 201 0
+2025-12-18 16:11:03,343 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:02 GMT'
+    'ETag': '"0x8DE3E79F30B6A94"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'c9cd3641-f01e-0029-0e62-702443000000'
+    'x-ms-client-request-id': '0f10f42e-dc56-11f0-bb62-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:01 GMT'
+2025-12-18 16:11:03,345 - INFO - Written 42 events to blob storage: audit-logs/2025-12-18T16:11:02.651506.json
+2025-12-18 16:11:03,352 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:05,020 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218184553014026085$20251218190405868010743$audit_general$Audit_General$na0010 HTTP/1.1" 200 102994
+2025-12-18 16:11:05,128 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218184553014026085$20251218190405868010743$audit_general$Audit_General$na0010.
+2025-12-18 16:11:05,137 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A05.131145.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '107779'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '108baa7e-dc56-11f0-9f85-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:05,143 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:05,777 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A05.131145.json HTTP/1.1" 201 0
+2025-12-18 16:11:05,780 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:04 GMT'
+    'ETag': '"0x8DE3E79F47E7FF4"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '6a0bca5a-a01e-0024-2662-70ec97000000'
+    'x-ms-client-request-id': '108baa7e-dc56-11f0-9f85-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:04 GMT'
+2025-12-18 16:11:05,781 - INFO - Written 109 events to blob storage: audit-logs/2025-12-18T16:11:05.131145.json
+2025-12-18 16:11:05,786 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:07,525 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218190430186014723$20251218192436913042689$audit_general$Audit_General$na0010 HTTP/1.1" 200 72170
+2025-12-18 16:11:07,559 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218190430186014723$20251218192436913042689$audit_general$Audit_General$na0010.
+2025-12-18 16:11:07,570 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A07.562918.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '75428'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '11fee9e8-dc56-11f0-a15d-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:07,574 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:08,186 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A07.562918.json HTTP/1.1" 201 0
+2025-12-18 16:11:08,188 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:07 GMT'
+    'ETag': '"0x8DE3E79F5EEAF8C"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'cdbaa725-301e-0026-6362-70522f000000'
+    'x-ms-client-request-id': '11fee9e8-dc56-11f0-a15d-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:06 GMT'
+2025-12-18 16:11:08,190 - INFO - Written 73 events to blob storage: audit-logs/2025-12-18T16:11:07.562918.json
+2025-12-18 16:11:08,197 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:09,255 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218192533612011684$20251218193955370040269$audit_general$Audit_General$na0010 HTTP/1.1" 200 139471
+2025-12-18 16:11:09,313 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218192533612011684$20251218193955370040269$audit_general$Audit_General$na0010.
+2025-12-18 16:11:09,326 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A09.316186.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '145754'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '130ab294-dc56-11f0-ad2c-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:09,335 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:09,989 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A09.316186.json HTTP/1.1" 201 0
+2025-12-18 16:11:09,991 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:08 GMT'
+    'ETag': '"0x8DE3E79F7022528"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '2e6bc165-901e-004d-4962-70d5db000000'
+    'x-ms-client-request-id': '130ab294-dc56-11f0-ad2c-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:08 GMT'
+2025-12-18 16:11:09,992 - INFO - Written 133 events to blob storage: audit-logs/2025-12-18T16:11:09.316186.json
+2025-12-18 16:11:09,999 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:12,078 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218194100549023879$20251218195928307044078$audit_general$Audit_General$na0010 HTTP/1.1" 200 66578
+2025-12-18 16:11:12,111 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218194100549023879$20251218195928307044078$audit_general$Audit_General$na0010.
+2025-12-18 16:11:12,126 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A12.115225.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '69709'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '14b5d74f-dc56-11f0-b389-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:12,136 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:12,797 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A12.115225.json HTTP/1.1" 201 0
+2025-12-18 16:11:12,802 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:11 GMT'
+    'ETag': '"0x8DE3E79F8AE23A8"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '3d0df443-101e-00fa-0c62-70f871000000'
+    'x-ms-client-request-id': '14b5d74f-dc56-11f0-b389-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:11 GMT'
+2025-12-18 16:11:12,805 - INFO - Written 71 events to blob storage: audit-logs/2025-12-18T16:11:12.115225.json
+2025-12-18 16:11:12,815 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:13,639 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218200029566013124$20251218202038024040492$audit_general$Audit_General$na0010 HTTP/1.1" 200 78086
+2025-12-18 16:11:13,677 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218200029566013124$20251218202038024040492$audit_general$Audit_General$na0010.
+2025-12-18 16:11:13,691 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A13.681316.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '81789'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '15a4c1c7-dc56-11f0-8b48-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:13,696 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:14,328 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A13.681316.json HTTP/1.1" 201 0
+2025-12-18 16:11:14,333 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:13 GMT'
+    'ETag': '"0x8DE3E79F99837D0"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '273a0235-d01e-003e-4f62-708d48000000'
+    'x-ms-client-request-id': '15a4c1c7-dc56-11f0-8b48-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:12 GMT'
+2025-12-18 16:11:14,336 - INFO - Written 84 events to blob storage: audit-logs/2025-12-18T16:11:13.681316.json
+2025-12-18 16:11:14,341 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:16,333 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218202150005008213$20251218203644094041079$audit_general$Audit_General$na0010 HTTP/1.1" 200 80641
+2025-12-18 16:11:16,364 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218202150005008213$20251218203644094041079$audit_general$Audit_General$na0010.
+2025-12-18 16:11:16,374 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A16.367353.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '84450'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '173e25ca-dc56-11f0-9526-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:16,382 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:17,030 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A16.367353.json HTTP/1.1" 201 0
+2025-12-18 16:11:17,035 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:15 GMT'
+    'ETag': '"0x8DE3E79FB345308"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '29eb893a-f01e-00af-7762-70e8fa000000'
+    'x-ms-client-request-id': '173e25ca-dc56-11f0-9526-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:15 GMT'
+2025-12-18 16:11:17,038 - INFO - Written 87 events to blob storage: audit-logs/2025-12-18T16:11:16.367353.json
+2025-12-18 16:11:17,042 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:18,891 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218203840968015935$20251218205631033057341$audit_general$Audit_General$na0010 HTTP/1.1" 200 50221
+2025-12-18 16:11:18,922 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218203840968015935$20251218205631033057341$audit_general$Audit_General$na0010.
+2025-12-18 16:11:18,928 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A18.923500.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '52596'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '18c3d3a4-dc56-11f0-b9df-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:18,934 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:19,584 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A18.923500.json HTTP/1.1" 201 0
+2025-12-18 16:11:19,589 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:18 GMT'
+    'ETag': '"0x8DE3E79FCBA0154"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '3ba1bdb9-001e-00e6-7062-70aa11000000'
+    'x-ms-client-request-id': '18c3d3a4-dc56-11f0-b9df-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:17 GMT'
+2025-12-18 16:11:19,590 - INFO - Written 54 events to blob storage: audit-logs/2025-12-18T16:11:18.923500.json
+2025-12-18 16:11:19,595 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-18 16:11:20,516 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218205901756031721$20251218210927388023648$audit_general$Audit_General$na0010 HTTP/1.1" 200 59881
+2025-12-18 16:11:20,542 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251218205901756031721$20251218210927388023648$audit_general$Audit_General$na0010.
+2025-12-18 16:11:20,552 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A20.544151.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '62720'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '19bb95c2-dc56-11f0-82db-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-18 16:11:20,557 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-18 16:11:21,210 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-18T16%3A11%3A20.544151.json HTTP/1.1" 201 0
+2025-12-18 16:11:21,215 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Thu, 18 Dec 2025 21:11:20 GMT'
+    'ETag': '"0x8DE3E79FDB28D60"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'b17f4c98-001e-003d-0262-706c2c000000'
+    'x-ms-client-request-id': '19bb95c2-dc56-11f0-82db-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Thu, 18 Dec 2025 21:11:19 GMT'
+2025-12-18 16:11:21,218 - INFO - Written 64 events to blob storage: audit-logs/2025-12-18T16:11:20.544151.json
+2025-12-18 16:11:21,218 - INFO - Processed a total of 1716 events from Fabric audit logs.
+2025-12-19 12:21:01,147 - INFO - Starting Fabric audit log ingestion
+2025-12-19 12:21:01,154 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-19 12:21:01,917 - DEBUG - https://login.microsoftonline.com:443 "POST /None/oauth2/token HTTP/1.1" 401 529
+2025-12-19 12:21:01,923 - ERROR - Error obtaining access token: 401 Client Error: Unauthorized for url: https://login.microsoftonline.com/None/oauth2/token
+2025-12-19 12:21:01,923 - ERROR - Response: N/A
+2025-12-19 12:21:01,928 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:21:02,547 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/None/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 401 61
+2025-12-19 12:21:02,548 - ERROR - Unauthorized (401): {"Message":"Authorization has been denied for this request."}
+2025-12-19 12:21:02,549 - ERROR - Check: TENANT_ID, CLIENT_ID, CLIENT_SECRET in your .env file
+2025-12-19 12:21:02,554 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:21:03,104 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/None/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-19T07%3A21%3A02&endTime=2025-12-19T17%3A21%3A02 HTTP/1.1" 401 61
+2025-12-19 12:21:03,106 - ERROR - Error listing available content: 401 Client Error: Unauthorized for url: https://manage.office.com/api/v1.0/None/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-19T07%3A21%3A02&endTime=2025-12-19T17%3A21%3A02
+2025-12-19 12:21:03,107 - INFO - Processed a total of 0 events from Fabric audit logs.
+2025-12-19 12:23:32,472 - INFO - Starting Fabric audit log ingestion
+2025-12-19 12:23:32,477 - DEBUG - Starting new HTTPS connection (1): login.microsoftonline.com:443
+2025-12-19 12:23:33,190 - DEBUG - https://login.microsoftonline.com:443 "POST /35acf02c-4b87-4ae6-9221-ff5cafd430b4/oauth2/token HTTP/1.1" 200 1835
+2025-12-19 12:23:33,195 - INFO - Successfully obtained access token.
+2025-12-19 12:23:33,195 - DEBUG - Token (first 50 chars): eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InJ0c0...
+2025-12-19 12:23:33,202 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:34,322 - DEBUG - https://manage.office.com:443 "POST /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/start?contentType=Audit.General HTTP/1.1" 400 97
+2025-12-19 12:23:34,323 - WARNING - Subscription response: 400 - {"error":{"code":"AF20024","message":"The subscription is already enabled. No property change."}}
+2025-12-19 12:23:34,323 - INFO - Proceeding with audit log collection.
+2025-12-19 12:23:34,328 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:35,149 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/subscriptions/content?contentType=Audit.General&startTime=2025-12-19T07%3A23%3A34&endTime=2025-12-19T17%3A23%3A34 HTTP/1.1" 200 13121
+2025-12-19 12:23:35,151 - INFO - Retrieved 32 content blobs for 2025-12-19T07:23:34 to 2025-12-19T17:23:34.
+2025-12-19 12:23:35,157 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:36,677 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219072436144059712$20251219074056436009158$audit_general$Audit_General$na0010 HTTP/1.1" 200 46561
+2025-12-19 12:23:36,702 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219072436144059712$20251219074056436009158$audit_general$Audit_General$na0010.
+2025-12-19 12:23:36,714 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A36.704247.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '48764'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '73dd1c2b-dcff-11f0-91a5-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:36,719 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:37,388 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A36.704247.json HTTP/1.1" 201 0
+2025-12-19 12:23:37,403 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:37 GMT'
+    'ETag': '"0x8DE3F2358877918"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1d8b7da1-a01e-001b-540c-712434000000'
+    'x-ms-client-request-id': '73dd1c2b-dcff-11f0-91a5-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:37 GMT'
+2025-12-19 12:23:37,406 - INFO - Written 50 events to blob storage: audit-logs/2025-12-19T12:23:36.704247.json
+2025-12-19 12:23:37,411 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:38,364 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219074122709013724$20251219075923433017005$audit_general$Audit_General$na0010 HTTP/1.1" 200 81721
+2025-12-19 12:23:38,408 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219074122709013724$20251219075923433017005$audit_general$Audit_General$na0010.
+2025-12-19 12:23:38,419 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A38.409972.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '85584'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '74e15710-dcff-11f0-9dc8-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:38,426 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:39,045 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A38.409972.json HTTP/1.1" 201 0
+2025-12-19 12:23:39,048 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:39 GMT'
+    'ETag': '"0x8DE3F2359861AE8"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'eaca2a88-001e-002d-3a0c-71a944000000'
+    'x-ms-client-request-id': '74e15710-dcff-11f0-9dc8-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:39 GMT'
+2025-12-19 12:23:39,050 - INFO - Written 88 events to blob storage: audit-logs/2025-12-19T12:23:38.409972.json
+2025-12-19 12:23:39,054 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:40,098 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219080019996027125$20251219081831886028853$audit_general$Audit_General$na0010 HTTP/1.1" 200 80095
+2025-12-19 12:23:40,147 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219080019996027125$20251219081831886028853$audit_general$Audit_General$na0010.
+2025-12-19 12:23:40,160 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A40.149279.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '83884'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '75eb0150-dcff-11f0-a88b-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:40,169 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:40,867 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A40.149279.json HTTP/1.1" 201 0
+2025-12-19 12:23:40,870 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:40 GMT'
+    'ETag': '"0x8DE3F235A9BEFA4"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '071b6842-901e-00f4-350c-71d1c1000000'
+    'x-ms-client-request-id': '75eb0150-dcff-11f0-a88b-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:40 GMT'
+2025-12-19 12:23:40,872 - INFO - Written 86 events to blob storage: audit-logs/2025-12-19T12:23:40.149279.json
+2025-12-19 12:23:40,877 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:42,701 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219081937028011906$20251219083835483040119$audit_general$Audit_General$na0010 HTTP/1.1" 200 64179
+2025-12-19 12:23:42,731 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219081937028011906$20251219083835483040119$audit_general$Audit_General$na0010.
+2025-12-19 12:23:42,739 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A42.733301.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '67214'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '77749c87-dcff-11f0-945b-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:42,744 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:43,328 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A42.733301.json HTTP/1.1" 201 0
+2025-12-19 12:23:43,331 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:43 GMT'
+    'ETag': '"0x8DE3F235C13AE0C"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '82604eb7-e01e-00ee-260c-71b01e000000'
+    'x-ms-client-request-id': '77749c87-dcff-11f0-945b-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:42 GMT'
+2025-12-19 12:23:43,332 - INFO - Written 69 events to blob storage: audit-logs/2025-12-19T12:23:42.733301.json
+2025-12-19 12:23:43,342 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:45,453 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219083941456016471$20251219085652395041063$audit_general$Audit_General$na0010 HTTP/1.1" 200 86521
+2025-12-19 12:23:45,594 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219083941456016471$20251219085652395041063$audit_general$Audit_General$na0010.
+2025-12-19 12:23:45,602 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A45.595484.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '90614'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '79296488-dcff-11f0-ba7b-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:45,610 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:46,746 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A45.595484.json HTTP/1.1" 201 0
+2025-12-19 12:23:46,750 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:46 GMT'
+    'ETag': '"0x8DE3F235E1DC2FC"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8be0722a-e01e-00b3-200c-71ba9a000000'
+    'x-ms-client-request-id': '79296488-dcff-11f0-ba7b-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:46 GMT'
+2025-12-19 12:23:46,751 - INFO - Written 93 events to blob storage: audit-logs/2025-12-19T12:23:45.595484.json
+2025-12-19 12:23:46,754 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:49,115 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219085847635017901$20251219091634405053785$audit_general$Audit_General$na0010 HTTP/1.1" 200 64981
+2025-12-19 12:23:49,266 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219085847635017901$20251219091634405053785$audit_general$Audit_General$na0010.
+2025-12-19 12:23:49,274 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A49.268266.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '68052'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7b59b75d-dcff-11f0-9be3-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:49,280 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:49,890 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A49.268266.json HTTP/1.1" 201 0
+2025-12-19 12:23:49,892 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:50 GMT'
+    'ETag': '"0x8DE3F235FFD63E8"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '1f2a6f18-001e-00d9-1a0c-7162b2000000'
+    'x-ms-client-request-id': '7b59b75d-dcff-11f0-9be3-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:49 GMT'
+2025-12-19 12:23:49,893 - INFO - Written 70 events to blob storage: audit-logs/2025-12-19T12:23:49.268266.json
+2025-12-19 12:23:49,898 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:50,846 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219091831318010921$20251219093141100020914$audit_general$Audit_General$na0010 HTTP/1.1" 200 61441
+2025-12-19 12:23:50,879 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219091831318010921$20251219093141100020914$audit_general$Audit_General$na0010.
+2025-12-19 12:23:50,892 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A50.881498.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '64348'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7c508cb9-dcff-11f0-b2c7-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:50,902 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:51,711 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A50.881498.json HTTP/1.1" 201 0
+2025-12-19 12:23:51,713 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:51 GMT'
+    'ETag': '"0x8DE3F23611286C8"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '9b73ec23-101e-006c-770c-71f1a0000000'
+    'x-ms-client-request-id': '7c508cb9-dcff-11f0-b2c7-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:51 GMT'
+2025-12-19 12:23:51,714 - INFO - Written 66 events to blob storage: audit-logs/2025-12-19T12:23:50.881498.json
+2025-12-19 12:23:51,718 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:54,078 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219093325383014737$20251219095133502049926$audit_general$Audit_General$na0010 HTTP/1.1" 200 72541
+2025-12-19 12:23:54,112 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219093325383014737$20251219095133502049926$audit_general$Audit_General$na0010.
+2025-12-19 12:23:54,122 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A54.114145.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '75972'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7e3d6263-dcff-11f0-bc64-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:54,128 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:54,749 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A54.114145.json HTTP/1.1" 201 0
+2025-12-19 12:23:54,754 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:54 GMT'
+    'ETag': '"0x8DE3F2362E29524"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '12613c1a-801e-006e-670c-714f18000000'
+    'x-ms-client-request-id': '7e3d6263-dcff-11f0-bc64-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:54 GMT'
+2025-12-19 12:23:54,755 - INFO - Written 78 events to blob storage: audit-logs/2025-12-19T12:23:54.114145.json
+2025-12-19 12:23:54,761 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:56,777 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219095322849010693$20251219101142147041445$audit_general$Audit_General$na0010 HTTP/1.1" 200 65101
+2025-12-19 12:23:56,808 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219095322849010693$20251219101142147041445$audit_general$Audit_General$na0010.
+2025-12-19 12:23:56,815 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A56.810128.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '68180'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '7fd86e29-dcff-11f0-b7f6-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:56,820 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:57,581 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A56.810128.json HTTP/1.1" 201 0
+2025-12-19 12:23:57,585 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:57 GMT'
+    'ETag': '"0x8DE3F2364929DFC"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '0792df46-701e-0055-2d0c-710abc000000'
+    'x-ms-client-request-id': '7fd86e29-dcff-11f0-b7f6-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:57 GMT'
+2025-12-19 12:23:57,587 - INFO - Written 70 events to blob storage: audit-logs/2025-12-19T12:23:56.810128.json
+2025-12-19 12:23:57,595 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:23:58,665 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219101346931010655$20251219103035332042098$audit_general$Audit_General$na0010 HTTP/1.1" 200 76441
+2025-12-19 12:23:58,700 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219101346931010655$20251219103035332042098$audit_general$Audit_General$na0010.
+2025-12-19 12:23:58,708 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A58.701358.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '80060'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '80f933a1-dcff-11f0-b047-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:23:58,712 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:23:59,373 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A23%3A58.701358.json HTTP/1.1" 201 0
+2025-12-19 12:23:59,376 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:23:59 GMT'
+    'ETag': '"0x8DE3F2365A2A738"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'f3a45a01-401e-003c-320c-7133f0000000'
+    'x-ms-client-request-id': '80f933a1-dcff-11f0-b047-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:23:59 GMT'
+2025-12-19 12:23:59,377 - INFO - Written 82 events to blob storage: audit-logs/2025-12-19T12:23:58.701358.json
+2025-12-19 12:23:59,381 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:01,814 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219103127954036638$20251219104943803053902$audit_general$Audit_General$na0010 HTTP/1.1" 200 55681
+2025-12-19 12:24:01,842 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219103127954036638$20251219104943803053902$audit_general$Audit_General$na0010.
+2025-12-19 12:24:01,849 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A01.844402.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '58312'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '82d88769-dcff-11f0-8112-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:01,856 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:02,576 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A01.844402.json HTTP/1.1" 201 0
+2025-12-19 12:24:02,581 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:02 GMT'
+    'ETag': '"0x8DE3F23678C6DC4"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'e21b3106-601e-0059-400c-719db4000000'
+    'x-ms-client-request-id': '82d88769-dcff-11f0-8112-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:02 GMT'
+2025-12-19 12:24:02,582 - INFO - Written 60 events to blob storage: audit-logs/2025-12-19T12:24:01.844402.json
+2025-12-19 12:24:02,589 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:03,618 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219105027293041526$20251219110821021016424$audit_general$Audit_General$na0010 HTTP/1.1" 200 88441
+2025-12-19 12:24:03,655 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219105027293041526$20251219110821021016424$audit_general$Audit_General$na0010.
+2025-12-19 12:24:03,665 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A03.657606.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '92626'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '83edba48-dcff-11f0-a6ac-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:03,673 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:04,312 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A03.657606.json HTTP/1.1" 201 0
+2025-12-19 12:24:04,315 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:04 GMT'
+    'ETag': '"0x8DE3F236895F9D4"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'd0933795-a01e-00b2-7f0c-71e546000000'
+    'x-ms-client-request-id': '83edba48-dcff-11f0-a6ac-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:03 GMT'
+2025-12-19 12:24:04,317 - INFO - Written 95 events to blob storage: audit-logs/2025-12-19T12:24:03.657606.json
+2025-12-19 12:24:04,321 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:05,287 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219111133854017187$20251219112842345014129$audit_general$Audit_General$na0010 HTTP/1.1" 200 70621
+2025-12-19 12:24:05,321 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219111133854017187$20251219112842345014129$audit_general$Audit_General$na0010.
+2025-12-19 12:24:05,331 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A05.323550.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '73960'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '84ebcbb7-dcff-11f0-a8f6-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:05,336 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:06,231 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A05.323550.json HTTP/1.1" 201 0
+2025-12-19 12:24:06,234 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:06 GMT'
+    'ETag': '"0x8DE3F2369BA49A4"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '49b7b859-601e-002b-680c-719afb000000'
+    'x-ms-client-request-id': '84ebcbb7-dcff-11f0-a8f6-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:05 GMT'
+2025-12-19 12:24:06,235 - INFO - Written 76 events to blob storage: audit-logs/2025-12-19T12:24:05.323550.json
+2025-12-19 12:24:06,242 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:08,254 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219112926395059809$20251219114841741012020$audit_general$Audit_General$na0010 HTTP/1.1" 200 61381
+2025-12-19 12:24:08,285 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219112926395059809$20251219114841741012020$audit_general$Audit_General$na0010.
+2025-12-19 12:24:08,293 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A08.287490.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '64284'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '86afe20a-dcff-11f0-b0a8-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:08,299 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:08,929 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A08.287490.json HTTP/1.1" 201 0
+2025-12-19 12:24:08,935 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:09 GMT'
+    'ETag': '"0x8DE3F236B55EA3C"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '904ea15b-901e-0010-7e0c-71df5f000000'
+    'x-ms-client-request-id': '86afe20a-dcff-11f0-b0a8-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:08 GMT'
+2025-12-19 12:24:08,937 - INFO - Written 66 events to blob storage: audit-logs/2025-12-19T12:24:08.287490.json
+2025-12-19 12:24:08,945 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:10,772 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219114944129027346$20251219120839656040281$audit_general$Audit_General$na0010 HTTP/1.1" 200 89221
+2025-12-19 12:24:10,814 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219114944129027346$20251219120839656040281$audit_general$Audit_General$na0010.
+2025-12-19 12:24:10,819 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A10.814960.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '93440'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8831454a-dcff-11f0-afc3-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:10,822 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:11,471 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A10.814960.json HTTP/1.1" 201 0
+2025-12-19 12:24:11,474 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:11 GMT'
+    'ETag': '"0x8DE3F236CD977E8"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '7d13bed9-f01e-0080-430c-71e531000000'
+    'x-ms-client-request-id': '8831454a-dcff-11f0-afc3-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:11 GMT'
+2025-12-19 12:24:11,476 - INFO - Written 96 events to blob storage: audit-logs/2025-12-19T12:24:10.814960.json
+2025-12-19 12:24:11,481 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:12,405 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219121145158059945$20251219122931243005417$audit_general$Audit_General$na0010 HTTP/1.1" 200 62521
+2025-12-19 12:24:12,434 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219121145158059945$20251219122931243005417$audit_general$Audit_General$na0010.
+2025-12-19 12:24:12,446 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A12.437793.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '65482'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '89298b8e-dcff-11f0-9ad4-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:12,451 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:13,093 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A12.437793.json HTTP/1.1" 201 0
+2025-12-19 12:24:13,095 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:13 GMT'
+    'ETag': '"0x8DE3F236DD1E690"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8a25ef8f-d01e-002e-6a0c-714820000000'
+    'x-ms-client-request-id': '89298b8e-dcff-11f0-9ad4-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:12 GMT'
+2025-12-19 12:24:13,097 - INFO - Written 67 events to blob storage: audit-logs/2025-12-19T12:24:12.437793.json
+2025-12-19 12:24:13,100 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:13,991 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219122931527005447$20251219124644852019859$audit_general$Audit_General$na0010 HTTP/1.1" 200 69541
+2025-12-19 12:24:14,037 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219122931527005447$20251219124644852019859$audit_general$Audit_General$na0010.
+2025-12-19 12:24:14,048 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A14.040452.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '72826'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8a1dd3a0-dcff-11f0-a003-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:14,056 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:14,764 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A14.040452.json HTTP/1.1" 201 0
+2025-12-19 12:24:14,768 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:14 GMT'
+    'ETag': '"0x8DE3F236ED094BC"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'fb043607-101e-00a7-110c-71f2f5000000'
+    'x-ms-client-request-id': '8a1dd3a0-dcff-11f0-a003-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:14 GMT'
+2025-12-19 12:24:14,770 - INFO - Written 75 events to blob storage: audit-logs/2025-12-19T12:24:14.040452.json
+2025-12-19 12:24:14,776 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:16,811 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219124838419030208$20251219130844689028475$audit_general$Audit_General$na0010 HTTP/1.1" 200 76381
+2025-12-19 12:24:16,851 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219124838419030208$20251219130844689028475$audit_general$Audit_General$na0010.
+2025-12-19 12:24:16,857 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A16.852448.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '79996'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8bca9741-dcff-11f0-bca1-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:16,859 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:17,529 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A16.852448.json HTTP/1.1" 201 0
+2025-12-19 12:24:17,531 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:17 GMT'
+    'ETag': '"0x8DE3F237076E49C"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '43314697-c01e-00c6-650c-71d1b6000000'
+    'x-ms-client-request-id': '8bca9741-dcff-11f0-bca1-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:16 GMT'
+2025-12-19 12:24:17,533 - INFO - Written 82 events to blob storage: audit-logs/2025-12-19T12:24:16.852448.json
+2025-12-19 12:24:17,540 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:19,521 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219130939856028133$20251219132837279024334$audit_general$Audit_General$na0010 HTTP/1.1" 200 66061
+2025-12-19 12:24:19,553 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219130939856028133$20251219132837279024334$audit_general$Audit_General$na0010.
+2025-12-19 12:24:19,563 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A19.555549.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '69186'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8d6777fa-dcff-11f0-bc2e-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:19,569 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:20,374 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A19.555549.json HTTP/1.1" 201 0
+2025-12-19 12:24:20,378 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:20 GMT'
+    'ETag': '"0x8DE3F2372284BDC"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '9d720271-101e-0053-0f0c-713903000000'
+    'x-ms-client-request-id': '8d6777fa-dcff-11f0-bc2e-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:20 GMT'
+2025-12-19 12:24:20,380 - INFO - Written 71 events to blob storage: audit-logs/2025-12-19T12:24:19.555549.json
+2025-12-19 12:24:20,384 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:21,344 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219133043909025981$20251219134957065012896$audit_general$Audit_General$na0010 HTTP/1.1" 200 75301
+2025-12-19 12:24:21,383 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219133043909025981$20251219134957065012896$audit_general$Audit_General$na0010.
+2025-12-19 12:24:21,394 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A21.385731.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '78862'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8e7eba54-dcff-11f0-a928-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:21,401 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:22,032 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A21.385731.json HTTP/1.1" 201 0
+2025-12-19 12:24:22,035 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:22 GMT'
+    'ETag': '"0x8DE3F237324F330"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '6e37beec-001e-0094-6b0c-71ad5e000000'
+    'x-ms-client-request-id': '8e7eba54-dcff-11f0-a928-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:21 GMT'
+2025-12-19 12:24:22,036 - INFO - Written 81 events to blob storage: audit-logs/2025-12-19T12:24:21.385731.json
+2025-12-19 12:24:22,039 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:23,116 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219135025778049834$20251219141027391037269$audit_general$Audit_General$na0010 HTTP/1.1" 200 76561
+2025-12-19 12:24:23,156 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219135025778049834$20251219141027391037269$audit_general$Audit_General$na0010.
+2025-12-19 12:24:23,161 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A23.157370.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '80188'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '8f8ca4b3-dcff-11f0-ae12-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:23,164 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:23,792 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A23.157370.json HTTP/1.1" 201 0
+2025-12-19 12:24:23,795 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:23 GMT'
+    'ETag': '"0x8DE3F237431DBA0"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '5ec796c3-f01e-004b-7c0c-71e664000000'
+    'x-ms-client-request-id': '8f8ca4b3-dcff-11f0-ae12-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:23 GMT'
+2025-12-19 12:24:23,797 - INFO - Written 82 events to blob storage: audit-logs/2025-12-19T12:24:23.157370.json
+2025-12-19 12:24:23,803 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:25,835 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219141148943029679$20251219142749003059518$audit_general$Audit_General$na0010 HTTP/1.1" 200 82106
+2025-12-19 12:24:25,901 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219141148943029679$20251219142749003059518$audit_general$Audit_General$na0010.
+2025-12-19 12:24:25,905 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A25.902534.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '85874'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '912f5319-dcff-11f0-8f96-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:25,908 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:26,611 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A25.902534.json HTTP/1.1" 201 0
+2025-12-19 12:24:26,613 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:26 GMT'
+    'ETag': '"0x8DE3F2375DFDC44"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '4f5e3c1c-601e-00cf-570c-719465000000'
+    'x-ms-client-request-id': '912f5319-dcff-11f0-8f96-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:26 GMT'
+2025-12-19 12:24:26,616 - INFO - Written 85 events to blob storage: audit-logs/2025-12-19T12:24:25.902534.json
+2025-12-19 12:24:26,624 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:27,630 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219142749227059522$20251219144432630054668$audit_general$Audit_General$na0010 HTTP/1.1" 200 85813
+2025-12-19 12:24:27,670 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219142749227059522$20251219144432630054668$audit_general$Audit_General$na0010.
+2025-12-19 12:24:27,678 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A27.671880.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '89816'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '923dc3cd-dcff-11f0-bfbd-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:27,684 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:28,312 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A27.671880.json HTTP/1.1" 201 0
+2025-12-19 12:24:28,315 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:28 GMT'
+    'ETag': '"0x8DE3F2376E40588"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '802fee3c-801e-0041-2e0c-7142d3000000'
+    'x-ms-client-request-id': '923dc3cd-dcff-11f0-bfbd-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:27 GMT'
+2025-12-19 12:24:28,317 - INFO - Written 90 events to blob storage: audit-logs/2025-12-19T12:24:27.671880.json
+2025-12-19 12:24:28,323 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:31,165 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219144549765035028$20251219150638300041301$audit_general$Audit_General$na0010 HTTP/1.1" 200 73501
+2025-12-19 12:24:31,205 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219144549765035028$20251219150638300041301$audit_general$Audit_General$na0010.
+2025-12-19 12:24:31,214 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A31.206989.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '76978'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '94592621-dcff-11f0-bf35-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:31,219 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:32,096 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A31.206989.json HTTP/1.1" 201 0
+2025-12-19 12:24:32,099 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:32 GMT'
+    'ETag': '"0x8DE3F2379250380"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'dbe8083d-e01e-0047-600c-71716c000000'
+    'x-ms-client-request-id': '94592621-dcff-11f0-bf35-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:31 GMT'
+2025-12-19 12:24:32,101 - INFO - Written 79 events to blob storage: audit-logs/2025-12-19T12:24:31.206989.json
+2025-12-19 12:24:32,105 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:34,166 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219150841283015956$20251219152531093013623$audit_general$Audit_General$na0010 HTTP/1.1" 200 57721
+2025-12-19 12:24:34,200 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219150841283015956$20251219152531093013623$audit_general$Audit_General$na0010.
+2025-12-19 12:24:34,209 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A34.202613.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '60452'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '96226038-dcff-11f0-b9de-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:34,214 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:34,924 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A34.202613.json HTTP/1.1" 201 0
+2025-12-19 12:24:34,925 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:35 GMT'
+    'ETag': '"0x8DE3F237AD4AF3C"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '115c7746-b01e-0075-4a0c-71711b000000'
+    'x-ms-client-request-id': '96226038-dcff-11f0-b9de-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:34 GMT'
+2025-12-19 12:24:34,926 - INFO - Written 62 events to blob storage: audit-logs/2025-12-19T12:24:34.202613.json
+2025-12-19 12:24:34,929 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:36,185 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219152637513009488$20251219153831392013913$audit_general$Audit_General$na0010 HTTP/1.1" 200 122592
+2025-12-19 12:24:36,244 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219152637513009488$20251219153831392013913$audit_general$Audit_General$na0010.
+2025-12-19 12:24:36,253 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A36.246555.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '127965'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '975a3fd9-dcff-11f0-a1b9-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:36,260 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:37,069 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A36.246555.json HTTP/1.1" 201 0
+2025-12-19 12:24:37,072 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:37 GMT'
+    'ETag': '"0x8DE3F237C1B5454"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'e62edc02-f01e-0016-2a0c-71ece0000000'
+    'x-ms-client-request-id': '975a3fd9-dcff-11f0-a1b9-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:36 GMT'
+2025-12-19 12:24:37,074 - INFO - Written 125 events to blob storage: audit-logs/2025-12-19T12:24:36.246555.json
+2025-12-19 12:24:37,079 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:39,098 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219153959019037596$20251219155829923020144$audit_general$Audit_General$na0010 HTTP/1.1" 200 65101
+2025-12-19 12:24:39,182 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219153959019037596$20251219155829923020144$audit_general$Audit_General$na0010.
+2025-12-19 12:24:39,191 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A39.184652.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '68180'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '991a84a2-dcff-11f0-8e6e-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:39,196 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:39,884 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A39.184652.json HTTP/1.1" 201 0
+2025-12-19 12:24:39,887 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:39 GMT'
+    'ETag': '"0x8DE3F237DC89A6C"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '28c04069-501e-0099-610c-71658a000000'
+    'x-ms-client-request-id': '991a84a2-dcff-11f0-8e6e-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:39 GMT'
+2025-12-19 12:24:39,888 - INFO - Written 70 events to blob storage: audit-logs/2025-12-19T12:24:39.184652.json
+2025-12-19 12:24:39,893 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:41,733 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219155943153009962$20251219161830187041800$audit_general$Audit_General$na0010 HTTP/1.1" 200 82861
+2025-12-19 12:24:41,779 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219155943153009962$20251219161830187041800$audit_general$Audit_General$na0010.
+2025-12-19 12:24:41,787 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A41.780213.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '86782'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9aa6b1d6-dcff-11f0-a2f7-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:41,790 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:42,595 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A41.780213.json HTTP/1.1" 201 0
+2025-12-19 12:24:42,598 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:42 GMT'
+    'ETag': '"0x8DE3F237F66E5EC"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'bd898c60-c01e-000d-710c-71d2e3000000'
+    'x-ms-client-request-id': '9aa6b1d6-dcff-11f0-a2f7-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:42 GMT'
+2025-12-19 12:24:42,600 - INFO - Written 89 events to blob storage: audit-logs/2025-12-19T12:24:41.780213.json
+2025-12-19 12:24:42,605 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:44,479 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219161934547014483$20251219163958634035038$audit_general$Audit_General$na0010 HTTP/1.1" 200 60661
+2025-12-19 12:24:44,593 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219161934547014483$20251219163958634035038$audit_general$Audit_General$na0010.
+2025-12-19 12:24:44,602 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A44.595366.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '63534'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9c54247e-dcff-11f0-a67f-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:44,605 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:45,327 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A44.595366.json HTTP/1.1" 201 0
+2025-12-19 12:24:45,331 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:45 GMT'
+    'ETag': '"0x8DE3F2381080098"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': 'bde64ce9-101e-001e-010c-71f6ef000000'
+    'x-ms-client-request-id': '9c54247e-dcff-11f0-a67f-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:45 GMT'
+2025-12-19 12:24:45,332 - INFO - Written 65 events to blob storage: audit-logs/2025-12-19T12:24:44.595366.json
+2025-12-19 12:24:45,339 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:47,585 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219164048534004990$20251219165901189059993$audit_general$Audit_General$na0010 HTTP/1.1" 200 86221
+2025-12-19 12:24:47,734 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219164048534004990$20251219165901189059993$audit_general$Audit_General$na0010.
+2025-12-19 12:24:47,744 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A47.736503.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '90294'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9e3386d4-dcff-11f0-a13b-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:47,748 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:48,420 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A47.736503.json HTTP/1.1" 201 0
+2025-12-19 12:24:48,426 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:48 GMT'
+    'ETag': '"0x8DE3F2382DFF8BC"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '33a16fda-b01e-0065-790c-71b473000000'
+    'x-ms-client-request-id': '9e3386d4-dcff-11f0-a13b-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:48 GMT'
+2025-12-19 12:24:48,430 - INFO - Written 93 events to blob storage: audit-logs/2025-12-19T12:24:47.736503.json
+2025-12-19 12:24:48,438 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:50,481 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219170041616009587$20251219171950600044882$audit_general$Audit_General$na0010 HTTP/1.1" 200 71701
+2025-12-19 12:24:50,514 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219170041616009587$20251219171950600044882$audit_general$Audit_General$na0010.
+2025-12-19 12:24:50,524 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A50.516511.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '75094'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': '9fdbc20f-dcff-11f0-b522-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:50,529 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:51,167 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A50.516511.json HTTP/1.1" 201 0
+2025-12-19 12:24:51,170 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:51 GMT'
+    'ETag': '"0x8DE3F2384831880"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '8a265eda-d01e-002e-090c-714820000000'
+    'x-ms-client-request-id': '9fdbc20f-dcff-11f0-b522-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:50 GMT'
+2025-12-19 12:24:51,172 - INFO - Written 77 events to blob storage: audit-logs/2025-12-19T12:24:50.516511.json
+2025-12-19 12:24:51,177 - DEBUG - Starting new HTTPS connection (1): manage.office.com:443
+2025-12-19 12:24:51,731 - DEBUG - https://manage.office.com:443 "GET /api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219172041694021059$20251219172251729023915$audit_general$Audit_General$na0010 HTTP/1.1" 200 12139
+2025-12-19 12:24:51,732 - INFO - Successfully downloaded content blob from https://manage.office.com/api/v1.0/35acf02c-4b87-4ae6-9221-ff5cafd430b4/activity/feed/audit/20251219172041694021059$20251219172251729023915$audit_general$Audit_General$na0010.
+2025-12-19 12:24:51,738 - INFO - Request URL: 'https://fabricmonitoringsaeusrh.blob.core.windows.net/fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A51.734063.json'
+Request method: 'PUT'
+Request headers:
+    'Content-Length': '12724'
+    'x-ms-blob-type': 'REDACTED'
+    'x-ms-version': 'REDACTED'
+    'Content-Type': 'application/octet-stream'
+    'Accept': 'application/xml'
+    'User-Agent': 'azsdk-python-storage-blob/12.27.1 Python/3.13.11 (Windows-11-10.0.26200-SP0)'
+    'x-ms-date': 'REDACTED'
+    'x-ms-client-request-id': 'a0950e48-dcff-11f0-b5c6-c89665f06003'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-12-19 12:24:51,741 - DEBUG - Starting new HTTPS connection (1): fabricmonitoringsaeusrh.blob.core.windows.net:443
+2025-12-19 12:24:52,486 - DEBUG - https://fabricmonitoringsaeusrh.blob.core.windows.net:443 "PUT /fabric-audit-logs/audit-logs/2025-12-19T12%3A24%3A51.734063.json HTTP/1.1" 201 0
+2025-12-19 12:24:52,489 - INFO - Response status: 201
+Response headers:
+    'Content-Length': '0'
+    'Content-MD5': 'REDACTED'
+    'Last-Modified': 'Fri, 19 Dec 2025 17:24:52 GMT'
+    'ETag': '"0x8DE3F23854C5FF8"'
+    'Server': 'Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0'
+    'x-ms-request-id': '343608ae-f01e-00dd-5d0c-71efb5000000'
+    'x-ms-client-request-id': 'a0950e48-dcff-11f0-b5c6-c89665f06003'
+    'x-ms-version': 'REDACTED'
+    'x-ms-content-crc64': 'REDACTED'
+    'x-ms-request-server-encrypted': 'REDACTED'
+    'Date': 'Fri, 19 Dec 2025 17:24:51 GMT'
+2025-12-19 12:24:52,491 - INFO - Written 13 events to blob storage: audit-logs/2025-12-19T12:24:51.734063.json
+2025-12-19 12:24:52,491 - INFO - Processed a total of 2451 events from Fabric audit logs.
