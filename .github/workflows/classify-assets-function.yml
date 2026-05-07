@@ -180,6 +180,13 @@ jobs:
           # consent that the federated SP doesn't have, and they're not where
           # the function-deploy bugs hide. -target also scopes refresh, so
           # unrelated fabric resources won't be touched.
+          #
+          # NOTE: azurerm_storage_blob.function_zip is intentionally excluded.
+          # TF's archive_file regenerates a hash from local source on every run,
+          # but the actual deploy uses 'az functionapp deployment source
+          # config-zip' (separate from TF's blob upload). The blob will always
+          # show as drifted whenever code changes, which is expected and
+          # unrelated to the kind of config drift we want to catch.
           set +e
           terraform plan -input=false -lock=false -detailed-exitcode -out=tfplan \
             -target=azurerm_storage_account.func \
@@ -187,7 +194,6 @@ jobs:
             -target=azurerm_log_analytics_workspace.func \
             -target=azurerm_application_insights.func \
             -target=azurerm_service_plan.func \
-            -target=azurerm_storage_blob.function_zip \
             -target=azurerm_function_app_flex_consumption.func \
             -target=azurerm_role_assignment.func_storage \
             -target=azurerm_role_assignment.func_storage_queue \
