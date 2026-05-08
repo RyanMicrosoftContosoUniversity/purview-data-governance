@@ -517,9 +517,17 @@ jobs:
           PY
 
           # The function doesn't log raw event payloads, so we can't grep for
-          # the probe token. Instead we count classify_assets invocations that
-          # started AT OR AFTER our send time. If the listener is dead, the
-          # synthetic event sits unread and the count stays at 0.
+          # the probe token directly. Instead we look for ANY signal that
+          # classify_assets executed at or after our send time. We union three
+          # tables because App Insights adaptive sampling often drops the
+          # `requests` row even when traces survive (we hit this exact false
+          # negative in run 25555800315 — the function processed the probe in
+          # 11s but no `requests` row was emitted, so the old check timed out).
+          #
+          # Signals (any one is sufficient):
+          #   - requests.name == classify_assets (function host's request entry)
+          #   - traces with "Executed 'Functions.classify_assets'" (host runtime)
+          #   - traces with "classify_assets EH batch:" (our function code)
           #
           # 10 min ceiling: on Flex Consumption from cold-start, the platform
           # scaler can take 3-7 min to provision a worker for a non-HTTP
@@ -529,14 +537,19 @@ jobs:
           MAX_WAIT=600
           STEP=20
           ELAPSED=0
+          KQL="union
+                 (requests | where timestamp >= datetime($SEND_TS_ISO) | where name == 'classify_assets' or operation_Name == 'classify_assets' | project timestamp, src='request'),
+                 (traces   | where timestamp >= datetime($SEND_TS_ISO) | where message has \"Executed 'Functions.classify_assets'\" | project timestamp, src='executed'),
+                 (traces   | where timestamp >= datetime($SEND_TS_ISO) | where message startswith 'classify_assets EH batch' | project timestamp, src='userlog')
+               | count"
           while [ $ELAPSED -lt $MAX_WAIT ]; do
             HITS=$(az monitor app-insights query \
               --app "$APPI_ID" \
-              --analytics-query "requests | where timestamp >= datetime($SEND_TS_ISO) | where name == 'classify_assets' or operation_Name == 'classify_assets' | count" \
+              --analytics-query "$KQL" \
               --query "tables[0].rows[0][0]" -o tsv 2>/dev/null || echo 0)
             HITS=${HITS:-0}
             if [ "$HITS" -gt 0 ]; then
-              echo "::notice::EH listener is alive — $HITS classify_assets invocation(s) observed after probe send (latency: ${ELAPSED}s, probe: $PROBE)."
+              echo "::notice::EH listener is alive — $HITS classify_assets signal(s) observed after probe send (latency: ${ELAPSED}s, probe: $PROBE)."
               exit 0
             fi
             echo "Waiting for invocation... (${ELAPSED}s elapsed, hits=$HITS)"
