@@ -256,6 +256,66 @@ jobs:
             echo "✓ AzureWebJobsStorage is not set (correct for identity-based storage)."
           fi
 
+          # Required: PurviewEvents__credential = "managedidentity".
+          # Without this, the EH SDK / platform scale controller can't tell to
+          # auth via managed identity even when __fullyQualifiedNamespace is set.
+          # The scaler then never wakes a worker → silent dead listener.
+          eh_cred=$(echo "$settings_json" | jq -r '.[] | select(.name=="PurviewEvents__credential") | .value')
+          if [ "$eh_cred" != "managedidentity" ]; then
+            echo "::error::PurviewEvents__credential is '$eh_cred' (expected 'managedidentity'). Without this, the Flex Consumption scale controller cannot authenticate to Event Hubs and the listener will silently die."
+            exit 1
+          fi
+          echo "✓ PurviewEvents__credential = managedidentity"
+
+          eh_fqns=$(echo "$settings_json" | jq -r '.[] | select(.name=="PurviewEvents__fullyQualifiedNamespace") | .value')
+          if [ -z "$eh_fqns" ] || [ "$eh_fqns" = "null" ]; then
+            echo "::error::PurviewEvents__fullyQualifiedNamespace is not set."
+            exit 1
+          fi
+          echo "✓ PurviewEvents__fullyQualifiedNamespace = $eh_fqns"
+
+      # ---------------------------------------------------------------------
+      # Detect MI-rotation drift: the function's MI principalId must match
+      # the principal_id that holds 'Azure Event Hubs Data Receiver' on the
+      # EH namespace AND 'Storage Blob Data Owner' on the function's storage.
+      # If the function app gets recreated, its MI rotates but TF state may
+      # still hold the old principal_id, leaving the live MI without RBAC.
+      # That's a silent dead-listener bug: deploy succeeds but no events flow.
+      # ---------------------------------------------------------------------
+      - name: Function MI role-binding check
+        env:
+          FUNCTION_APP_NAME: func-fabricsens-rh
+          FUNCTION_APP_RG: governance-rg
+          EH_NAMESPACE: ehns-fabricsens-rh
+          STORAGE_ACCT: stfabricsensrh
+        run: |
+          set -euo pipefail
+          live_mi=$(az functionapp identity show -g "$FUNCTION_APP_RG" -n "$FUNCTION_APP_NAME" --query principalId -o tsv)
+          if [ -z "$live_mi" ]; then
+            echo "::error::Function app $FUNCTION_APP_NAME has no system-assigned identity."
+            exit 1
+          fi
+          echo "Live function MI principalId: $live_mi"
+
+          sub=$(az account show --query id -o tsv)
+          ehns_id="/subscriptions/$sub/resourceGroups/$FUNCTION_APP_RG/providers/Microsoft.EventHub/namespaces/$EH_NAMESPACE"
+          sa_id="/subscriptions/$sub/resourceGroups/$FUNCTION_APP_RG/providers/Microsoft.Storage/storageAccounts/$STORAGE_ACCT"
+
+          check_role() {
+            local role="$1" scope="$2"
+            local count
+            count=$(az role assignment list --assignee "$live_mi" --role "$role" --scope "$scope" --query "length(@)" -o tsv 2>/dev/null || echo 0)
+            if [ "$count" -eq 0 ]; then
+              echo "::error::Live function MI ($live_mi) is MISSING '$role' on $scope. This is the MI-rotation drift bug — TF state likely holds an old principalId. The EH listener will be dead."
+              return 1
+            fi
+            echo "✓ MI has '$role' on ${scope##*/}"
+          }
+          check_role "Azure Event Hubs Data Receiver" "$ehns_id"
+          check_role "Storage Blob Data Owner"        "$sa_id"
+          check_role "Storage Queue Data Contributor" "$sa_id"
+          check_role "Storage Table Data Contributor" "$sa_id"
+
   # ===========================================================================
   # STAGE 3: Package (build deployment zip)
   # ===========================================================================
@@ -384,12 +444,20 @@ jobs:
           echo "::notice::classify_assets is indexed and ready."
 
   # ===========================================================================
-  # STAGE 6: Listener health (post-deploy)
-  # Confirms the EH listener actually attached. The EventProcessor library
-  # writes an ownership/lease blob per partition every ~5 min — if these are
-  # stale or missing, the listener is dead even though the deploy "succeeded".
-  # This is the smoking-gun signal for the AzureWebJobsStorage="" failure mode.
-  # Requires: federated app reg has Storage Blob Data Reader on stfabricsensrh.
+  # STAGE 6: Listener health (post-deploy) — synthetic event test
+  # The previous lease-blob check was unreliable: on idle Flex Consumption EH
+  # functions, no worker runs unless events flow, so no ownership lease ever
+  # gets renewed even when the listener is fully healthy.
+  #
+  # The only reliable signal is end-to-end: send a synthetic event with a
+  # unique correlation token, then poll App Insights for an invocation that
+  # processed it within the timeout. If the function is dead (bad MI roles,
+  # missing __credential, AzureWebJobsStorage='', etc.) the platform scaler
+  # never wakes a worker and the synthetic event is never processed.
+  #
+  # Requires (one-time setup): the GH Actions OIDC SP needs
+  #   - "Azure Event Hubs Data Sender" on the EH (purview-scan-status)
+  #   - "Monitoring Reader" on the resource group (or AI component)
   # ===========================================================================
   listener-health:
     name: EH listener health check
@@ -397,9 +465,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'dev' }}
     env:
-      STORAGE_ACCT: stfabricsensrh
-      CONTAINER: azure-webjobs-eventhub
-      OWNERSHIP_PREFIX: ehns-fabricsens-rh.servicebus.windows.net/purview-scan-status/$Default/ownership
+      EH_NAMESPACE: ehns-fabricsens-rh
+      EH_NAME: purview-scan-status
+      APPI_NAME: appi-func-fabricsens-rh
+      APPI_RG: governance-rg
     steps:
       - name: Azure login (OIDC)
         uses: azure/login@v2
@@ -408,44 +477,74 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify EH lease blob heartbeat
+      - name: Synthetic event end-to-end test
         run: |
           set -euo pipefail
-          # Allow up to 3 min for the host to re-attach the listener.
-          # Lease must be < 10 min old to count as "alive".
-          MAX_WAIT=180
-          THRESHOLD_SEC=600
-          STEP=15
+          pip install --quiet azure-eventhub azure-identity
+
+          # Capture send time so we can scope the post-send invocation query.
+          SEND_TS_EPOCH=$(date -u +%s)
+          SEND_TS_ISO=$(date -u -d "@$SEND_TS_EPOCH" +"%Y-%m-%dT%H:%M:%SZ")
+          PROBE="ci-probe-${GITHUB_RUN_ID:-local}-${GITHUB_RUN_ATTEMPT:-1}-$SEND_TS_EPOCH"
+          echo "Probe token : $PROBE"
+          echo "Send time   : $SEND_TS_ISO"
+          export PROBE
+
+          python - <<'PY'
+          import os, json
+          from azure.eventhub import EventHubProducerClient, EventData
+          from azure.identity import DefaultAzureCredential
+          fqns  = f"{os.environ['EH_NAMESPACE']}.servicebus.windows.net"
+          eh    = os.environ['EH_NAME']
+          probe = os.environ['PROBE']
+          payload = {
+              "_ci_probe": probe,
+              # Synthetic shape — function will accept the batch but skip
+              # classification since it's not a real scan-status event.
+              "topic": "ci-synthetic",
+              "eventType": "ci.healthcheck",
+              "data": {"probe": probe},
+          }
+          with EventHubProducerClient(
+              fully_qualified_namespace=fqns,
+              eventhub_name=eh,
+              credential=DefaultAzureCredential(),
+          ) as p:
+              batch = p.create_batch()
+              batch.add(EventData(json.dumps(payload)))
+              p.send_batch(batch)
+          print("send OK")
+          PY
+
+          # The function doesn't log raw event payloads, so we can't grep for
+          # the probe token. Instead we count classify_assets invocations that
+          # started AT OR AFTER our send time. If the listener is dead, the
+          # synthetic event sits unread and the count stays at 0.
+          #
+          # 10 min ceiling: on Flex Consumption from cold-start, the platform
+          # scaler can take 3-7 min to provision a worker for a non-HTTP
+          # trigger after a period of zero traffic. App Insights ingestion
+          # adds another ~30-90s. 600s gives healthy margin.
+          APPI_ID=$(az monitor app-insights component show -g "$APPI_RG" --app "$APPI_NAME" --query appId -o tsv)
+          MAX_WAIT=600
+          STEP=20
           ELAPSED=0
-
           while [ $ELAPSED -lt $MAX_WAIT ]; do
-            BLOBS=$(az storage blob list \
-              --account-name "$STORAGE_ACCT" \
-              --container-name "$CONTAINER" \
-              --prefix "$OWNERSHIP_PREFIX" \
-              --auth-mode login \
-              --query "[].{name:name, lastModified:properties.lastModified}" \
-              -o json 2>/dev/null || echo "[]")
-
-            COUNT=$(echo "$BLOBS" | jq 'length')
-            if [ "$COUNT" -gt 0 ]; then
-              NEWEST=$(echo "$BLOBS" | jq -r 'max_by(.lastModified) | .lastModified')
-              NEWEST_TS=$(date -d "$NEWEST" +%s)
-              NOW_TS=$(date -u +%s)
-              AGE=$((NOW_TS - NEWEST_TS))
-              echo "Found $COUNT ownership blob(s); newest is ${AGE}s old ($NEWEST)"
-              if [ $AGE -lt $THRESHOLD_SEC ]; then
-                echo "::notice::EH listener is alive — lease renewed ${AGE}s ago."
-                exit 0
-              fi
-            else
-              echo "No ownership blobs found yet (waited ${ELAPSED}s)..."
+            HITS=$(az monitor app-insights query \
+              --app "$APPI_ID" \
+              --analytics-query "requests | where timestamp >= datetime($SEND_TS_ISO) | where name == 'classify_assets' or operation_Name == 'classify_assets' | count" \
+              --query "tables[0].rows[0][0]" -o tsv 2>/dev/null || echo 0)
+            HITS=${HITS:-0}
+            if [ "$HITS" -gt 0 ]; then
+              echo "::notice::EH listener is alive — $HITS classify_assets invocation(s) observed after probe send (latency: ${ELAPSED}s, probe: $PROBE)."
+              exit 0
             fi
+            echo "Waiting for invocation... (${ELAPSED}s elapsed, hits=$HITS)"
             sleep $STEP
             ELAPSED=$((ELAPSED + STEP))
           done
 
-          echo "::error::EH listener appears DEAD — no ownership blob renewal in the last ${THRESHOLD_SEC}s after waiting ${MAX_WAIT}s post-deploy."
-          echo "::error::This is the same failure mode caused by AzureWebJobsStorage='' on Flex Consumption."
-          echo "::error::Check app settings: 'az functionapp config appsettings list -g \${RG} -n \${APP}' — there should be NO 'AzureWebJobsStorage' (only 'AzureWebJobsStorage__accountName')."
+          echo "::error::EH listener appears DEAD — synthetic probe '$PROBE' was sent at $SEND_TS_ISO but no classify_assets invocation observed in App Insights within ${MAX_WAIT}s."
+          echo "::error::Common causes: (1) AzureWebJobsStorage='' on Flex; (2) PurviewEvents__credential missing; (3) function MI lacks 'Azure Event Hubs Data Receiver' or 'Storage Blob Data Owner' (often after MI rotation)."
+          echo "::error::Run 'az functionapp config appsettings list -g ${APPI_RG} -n func-fabricsens-rh' and 'az role assignment list --assignee \$(az functionapp identity show -g ${APPI_RG} -n func-fabricsens-rh --query principalId -o tsv)'."
           exit 1
