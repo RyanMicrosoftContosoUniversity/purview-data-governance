@@ -482,23 +482,25 @@ jobs:
           set -euo pipefail
           pip install --quiet azure-eventhub azure-identity
 
-          # Unique probe token so we can find OUR invocation in App Insights,
-          # not some unrelated traffic.
-          PROBE="ci-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-$(date +%s)"
-          echo "Probe token: $PROBE"
+          # Capture send time so we can scope the post-send invocation query.
+          SEND_TS_EPOCH=$(date -u +%s)
+          SEND_TS_ISO=$(date -u -d "@$SEND_TS_EPOCH" +"%Y-%m-%dT%H:%M:%SZ")
+          PROBE="ci-probe-${GITHUB_RUN_ID:-local}-${GITHUB_RUN_ATTEMPT:-1}-$SEND_TS_EPOCH"
+          echo "Probe token : $PROBE"
+          echo "Send time   : $SEND_TS_ISO"
+          export PROBE
 
-          python - <<PY
+          python - <<'PY'
           import os, json
           from azure.eventhub import EventHubProducerClient, EventData
           from azure.identity import DefaultAzureCredential
-          fqns = f"{os.environ['EH_NAMESPACE']}.servicebus.windows.net"
-          eh   = os.environ['EH_NAME']
+          fqns  = f"{os.environ['EH_NAMESPACE']}.servicebus.windows.net"
+          eh    = os.environ['EH_NAME']
           probe = os.environ['PROBE']
           payload = {
               "_ci_probe": probe,
-              # Shape mirrors a Purview scan-status event the function ignores
-              # (no operationName etc.) so it short-circuits early. We only
-              # need confirmation the listener fired and dispatched.
+              # Synthetic shape — function will accept the batch but skip
+              # classification since it's not a real scan-status event.
               "topic": "ci-synthetic",
               "eventType": "ci.healthcheck",
               "data": {"probe": probe},
@@ -514,27 +516,35 @@ jobs:
           print("send OK")
           PY
 
-          # Poll App Insights for an invocation whose trace mentions our probe.
+          # The function doesn't log raw event payloads, so we can't grep for
+          # the probe token. Instead we count classify_assets invocations that
+          # started AT OR AFTER our send time. If the listener is dead, the
+          # synthetic event sits unread and the count stays at 0.
+          #
+          # 10 min ceiling: on Flex Consumption from cold-start, the platform
+          # scaler can take 3-7 min to provision a worker for a non-HTTP
+          # trigger after a period of zero traffic. App Insights ingestion
+          # adds another ~30-90s. 600s gives healthy margin.
           APPI_ID=$(az monitor app-insights component show -g "$APPI_RG" --app "$APPI_NAME" --query appId -o tsv)
-          MAX_WAIT=300
+          MAX_WAIT=600
           STEP=20
           ELAPSED=0
           while [ $ELAPSED -lt $MAX_WAIT ]; do
             HITS=$(az monitor app-insights query \
               --app "$APPI_ID" \
-              --analytics-query "union traces, requests | where timestamp > ago(15m) | where message has '$PROBE' or customDimensions has '$PROBE' or operation_Id in ((traces | where timestamp > ago(15m) | where message has '$PROBE' | distinct operation_Id)) | count" \
+              --analytics-query "requests | where timestamp >= datetime($SEND_TS_ISO) | where name == 'classify_assets' or operation_Name == 'classify_assets' | count" \
               --query "tables[0].rows[0][0]" -o tsv 2>/dev/null || echo 0)
             HITS=${HITS:-0}
             if [ "$HITS" -gt 0 ]; then
-              echo "::notice::EH listener is alive — probe '$PROBE' processed (App Insights hits: $HITS, latency: ${ELAPSED}s)."
+              echo "::notice::EH listener is alive — $HITS classify_assets invocation(s) observed after probe send (latency: ${ELAPSED}s, probe: $PROBE)."
               exit 0
             fi
-            echo "Waiting for invocation... (${ELAPSED}s, hits=$HITS)"
+            echo "Waiting for invocation... (${ELAPSED}s elapsed, hits=$HITS)"
             sleep $STEP
             ELAPSED=$((ELAPSED + STEP))
           done
 
-          echo "::error::EH listener appears DEAD — synthetic probe '$PROBE' was sent but no invocation observed in App Insights within ${MAX_WAIT}s."
+          echo "::error::EH listener appears DEAD — synthetic probe '$PROBE' was sent at $SEND_TS_ISO but no classify_assets invocation observed in App Insights within ${MAX_WAIT}s."
           echo "::error::Common causes: (1) AzureWebJobsStorage='' on Flex; (2) PurviewEvents__credential missing; (3) function MI lacks 'Azure Event Hubs Data Receiver' or 'Storage Blob Data Owner' (often after MI rotation)."
           echo "::error::Run 'az functionapp config appsettings list -g ${APPI_RG} -n func-fabricsens-rh' and 'az role assignment list --assignee \$(az functionapp identity show -g ${APPI_RG} -n func-fabricsens-rh --query principalId -o tsv)'."
           exit 1
