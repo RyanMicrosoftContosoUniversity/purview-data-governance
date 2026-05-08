@@ -87,7 +87,9 @@ _http = _build_session()
 
 
 def _bearer(resource: str) -> str:
-    """Acquire an AAD access token for the given resource scope."""
+    """
+    Acquire an AAD access token for the given resource scope.
+    """
     scope = resource.rstrip('/') + '/.default'
     return _credential.get_token(scope).token
 
@@ -100,7 +102,8 @@ def _atlas_headers() -> dict:
 
 
 def _list_lakehouse_tables() -> list[str]:
-    """List Delta-table folder names under <lakehouse>/Tables.
+    """
+    List Delta-table folder names under <lakehouse>/Tables.
 
     Uses the OneLake DFS filesystem-list API. Returns leaf table names only
     (no schema prefix; lakehouse is non-schema-enabled).
@@ -125,7 +128,9 @@ def _list_lakehouse_tables() -> list[str]:
 
 
 def _read_sensitivity(table_name: str) -> str | None:
-    """Read `data-sensitivity` from the Delta log for a single table."""
+    """
+    Read `data-sensitivity` from the Delta log for a single table.
+    """
     storage_token = _bearer('https://storage.azure.com')
     uri = f'abfss://{WORKSPACE_ID}@{ONELAKE_DFS}/{LAKEHOUSE_ID}/Tables/{table_name}'
     try:
@@ -147,7 +152,8 @@ def _read_sensitivity(table_name: str) -> str | None:
 
 
 def _find_entity_guid(table_name: str) -> str | None:
-    """Find the Atlas entity GUID for a given lakehouse table.
+    """
+    Find the Atlas entity GUID for a given lakehouse table.
 
     Uses Purview's discovery/query API scoped to the workspace + lakehouse.
     """
@@ -179,7 +185,8 @@ def _find_entity_guid(table_name: str) -> str | None:
 
 
 def _is_already_classified(resp: requests.Response, classification_name: str) -> bool:
-    """Detect Purview's 'already attached' response across API variants.
+    """
+    Detect Purview's 'already attached' response across API variants.
     Atlas v2 spec returns 409 Conflict, but Purview Unified returns 400 with
     errorCode ATLAS-400-00-01A and 'already associated with classification' in
     the message body.
@@ -201,7 +208,9 @@ def _is_already_classified(resp: requests.Response, classification_name: str) ->
 
 
 def _classify(entity_guid: str, classification_name: str) -> None:
-    """Attach a classification to an Atlas entity (idempotent on typeName)."""
+    """
+    Attach a classification to an Atlas entity (idempotent on typeName).
+    """
     body = [{'typeName': classification_name, 'propagate': True}]
     url = f'{ATLAS_BASE}/entity/guid/{entity_guid}/classifications'
     resp = _http.post(url, headers=_atlas_headers(), json=body, timeout=30)
@@ -224,6 +233,10 @@ def _classify(entity_guid: str, classification_name: str) -> None:
 
 
 def _process_tables(tables: Iterable[str]) -> dict:
+    """
+    Process a list of tables, classify them based on their sensitivity, and
+    return a summary of the classification results.
+    """
     summary = {
         'total': 0,
         'classified': 0,
@@ -303,7 +316,8 @@ def _is_successful_scan(payload: dict) -> bool:
 
 
 def classify_assets_impl(events: List[func.EventHubEvent]) -> None:
-    """Triggered by Purview ScanStatusLogEvent rows streamed via diagnostic
+    """
+    Triggered by Purview ScanStatusLogEvent rows streamed via diagnostic
     settings into an Event Hub.
 
     Diagnostic settings can't filter on payload, so we filter here: if no event
