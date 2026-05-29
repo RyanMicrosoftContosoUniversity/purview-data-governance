@@ -2,6 +2,3 @@
 pytest>=8.0.0
 pytest-mock>=3.12.0
 responses>=0.25.0
-# Integration-test only (tests/integration/). Used to write a fixture
-# Delta table to the source lakehouse during E2E tests.
-pyarrow>=17.0.0

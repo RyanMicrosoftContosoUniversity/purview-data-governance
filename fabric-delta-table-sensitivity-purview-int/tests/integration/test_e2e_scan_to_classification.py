@@ -23,10 +23,9 @@ import time
 import uuid
 from typing import Optional
 
-import pyarrow as pa
 import pytest
 import requests
-from deltalake import DeltaTable, write_deltalake
+from deltalake import DeltaTable
 from deltalake.exceptions import TableNotFoundError
 
 logger = logging.getLogger(__name__)
@@ -65,43 +64,47 @@ def _table_uri(workspace_id: str, lakehouse_id: str, table: str) -> str:
     )
 
 
-# ---- Setup: ensure the fixture Delta table exists -------------------------
+# ---- Setup: verify the pre-created fixture Delta table -------------------
 
 
-def _ensure_fixture_table(
+def _verify_fixture_table(
     credential, workspace_id: str, lakehouse_id: str, table: str, sensitivity: str
 ) -> None:
-    """Idempotent: create the table with the TBLPROPERTY if missing; assert
-    the TBLPROPERTY value if it already exists."""
+    """Read-only check that the pre-created fixture table exists with the
+    expected `data-sensitivity` TBLPROPERTY.
+
+    The fixture table is NOT created by the test — the delta-rs / Rust kernel
+    rejects custom TBLPROPERTIES like `data-sensitivity` ("Error parsing
+    property"). Production sets these via Spark SQL `ALTER TABLE ... SET
+    TBLPROPERTIES` from a Fabric notebook (see
+    `src/notebook/create_sensitivity_tables.ipynb`), which goes through
+    Spark's Delta writer and bypasses the kernel's strict validation.
+
+    To set up: run that notebook against the source lakehouse to create
+    `<table>` with `data-sensitivity = '<sensitivity>'`, OR add a row for it
+    to the notebook's TABLES list.
+    """
     uri = _table_uri(workspace_id, lakehouse_id, table)
     opts = _storage_opts(credential)
     try:
         dt = DeltaTable(uri, storage_options=opts)
-        config = dt.metadata().configuration or {}
-        existing = config.get("data-sensitivity") or config.get("data_sensitivity")
-        if (existing or "").strip().lower() == sensitivity.lower():
-            logger.info("Fixture table %s already exists with correct TBLPROPERTY", table)
-            return
-        # Wrong value — rewrite the config.
-        logger.info(
-            "Fixture table %s exists but data-sensitivity=%r, expected %r — rewriting",
-            table,
-            existing,
-            sensitivity,
-        )
-        dt.alter.set_table_properties({"data-sensitivity": sensitivity})
-        return
     except TableNotFoundError:
-        logger.info("Creating fixture table %s with data-sensitivity=%s", table, sensitivity)
-        # Single-column empty Delta table — schema is irrelevant to the test.
-        empty = pa.table({"id": pa.array([], type=pa.int64())})
-        write_deltalake(
-            uri,
-            empty,
-            mode="overwrite",
-            configuration={"data-sensitivity": sensitivity},
-            storage_options=opts,
+        pytest.fail(
+            f"Fixture table '{table}' not found in lakehouse {lakehouse_id}. "
+            f"Pre-create it once via src/notebook/create_sensitivity_tables.ipynb "
+            f"with data-sensitivity='{sensitivity}'. See tests/integration/README.md."
         )
+    config = dt.metadata().configuration or {}
+    existing = config.get("data-sensitivity") or config.get("data_sensitivity")
+    if (existing or "").strip().lower() != sensitivity.lower():
+        pytest.fail(
+            f"Fixture table '{table}' exists but data-sensitivity={existing!r} "
+            f"(expected {sensitivity!r}). Re-run the notebook to fix the "
+            f"TBLPROPERTY, or pick a different fixture_sensitivity in conftest."
+        )
+    logger.info(
+        "Fixture table %s OK (data-sensitivity=%s)", table, existing
+    )
 
 
 # ---- Purview scan API -----------------------------------------------------
@@ -229,8 +232,8 @@ def test_e2e_scan_classifies_fixture_table(
     cfg = integration_config
     expected_classification = "Sensitivity.Public"
 
-    # ---- 1. Ensure fixture table exists with correct TBLPROPERTY ----
-    _ensure_fixture_table(
+    # ---- 1. Verify pre-created fixture table exists with correct TBLPROPERTY ----
+    _verify_fixture_table(
         az_credential,
         cfg["workspace_id"],
         cfg["lakehouse_id"],

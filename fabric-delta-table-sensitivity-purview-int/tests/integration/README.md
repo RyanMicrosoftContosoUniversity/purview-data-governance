@@ -33,9 +33,31 @@ to enable. See [docs/CICD.md](../../docs/CICD.md).
    | **Contributor** | Fabric workspace `sensitivity-metadata-ws` | Fabric portal → workspace → Manage access → Add → role: Contributor |
 
    These are *separate* from the Function MI's grants. The test identity
-   writes the fixture table itself and triggers the scan itself.
+   reads the fixture table and triggers the scan itself.
 
-4. **Function App deployed and healthy** — verified by the `Verify` stage
+4. **Pre-create the fixture table** — `integration_test_fixture` (or whatever
+   `INTEGRATION_FIXTURE_TABLE` is set to) must exist in the source lakehouse
+   with TBLPROPERTY `data-sensitivity = 'public'`.
+
+   The Rust delta kernel used by `deltalake-py` rejects custom TBLPROPERTIES
+   like `data-sensitivity` ("Error parsing property"), so the test cannot
+   create the fixture itself. Set it up once via the existing notebook
+   `src/notebook/create_sensitivity_tables.ipynb` (which uses Spark SQL and
+   bypasses the kernel's strict validation). Add an entry to its `TABLES`
+   list, e.g.:
+
+   ```python
+   TABLES = [
+       ("appointments", "confidential"),
+       # ... existing entries ...
+       ("integration_test_fixture", "public"),
+   ]
+   ```
+
+   Run the notebook once. After that the test is self-sufficient —
+   re-runs only need fresh classifications, which the test cleans up.
+
+5. **Function App deployed and healthy** — verified by the `Verify` stage
    that runs before integration tests.
 
 ---
