@@ -7,14 +7,18 @@ __pycache__/
 .venv/
 *.pyc
 
+# Python tooling caches
+.pytest_cache/
+.ruff_cache/
+
 # Environment files with secrets
 scripts/fabric_audit_env.env
 *.env
 !*.env.example
 *.log
-do_not_commit/*
-terraform-notes/*
-fabric-delta-table-sensitivity-purview-int\.local/*
+do_not_commit/
+terraform-notes/
+**/.local/
 
 # output files
 scripts\cost-analysis\output
@@ -25,4 +29,9 @@ scripts\cost-analysis\output
 .vscode/settings.json
 
 
-do_not_commit/*
+# Local Azurite emulator state
+azurite/
+__azurite_db_*
+__blobstorage__/
+__queuestorage__/
+

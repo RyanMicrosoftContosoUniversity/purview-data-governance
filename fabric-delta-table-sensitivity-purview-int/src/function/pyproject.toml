@@ -1,0 +1,11 @@
+[tool.ruff]
+target-version = "py311"
+extend-exclude = [
+    ".python_packages",
+    ".ruff_cache",
+    ".pytest_cache",
+    "__pycache__",
+]
+
+[tool.ruff.format]
+quote-style = "single"

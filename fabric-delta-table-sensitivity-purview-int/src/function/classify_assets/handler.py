@@ -1,4 +1,5 @@
-"""Event-Hub-triggered Function: classify Fabric lakehouse tables in Purview
+"""
+Event-Hub-triggered Function: classify Fabric lakehouse tables in Purview
 based on the Delta `data-sensitivity` TBLPROPERTY.
 
 Trigger:

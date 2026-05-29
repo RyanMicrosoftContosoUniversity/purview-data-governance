@@ -263,6 +263,27 @@ def test_process_tables_skips_unknown_sensitivity_value(monkeypatch):
     assert summary["skipped_no_property"] == 1
 
 
+@responses.activate
+def test_process_tables_skips_none_sensitivity_without_purview_call(monkeypatch, caplog):
+    monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: "None")
+    monkeypatch.setattr(
+        "classify_assets.handler._find_entity_guid",
+        lambda t: pytest.fail("should not look up entity when sensitivity is None"),
+    )
+    monkeypatch.setattr(
+        "classify_assets.handler._classify",
+        lambda *_: pytest.fail("should not classify sensitivity None"),
+    )
+
+    with caplog.at_level("WARNING"):
+        summary = _process_tables(["t1"])
+
+    assert summary["skipped_no_property"] == 1
+    assert summary["classified"] == 0
+    assert len(responses.calls) == 0
+    assert "unknown sensitivity 'None'; skipping." in caplog.text
+
+
 def test_process_tables_skips_when_entity_not_found(monkeypatch):
     monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: "Confidential")
     monkeypatch.setattr("classify_assets.handler._find_entity_guid", lambda t: None)

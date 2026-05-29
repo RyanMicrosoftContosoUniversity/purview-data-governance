@@ -1,4 +1,8 @@
-# CI/CD pipeline — `classify_assets` function
+# CI/CD pipeline — Purview sensitivity functions
+
+Covers both `classify_assets` (Fabric → Purview) and `sync_classification`
+(Purview → Fabric) — they live in the same Function App and are deployed
+together.
 
 Azure DevOps pipeline definition: [`azure-pipelines.yml`](./azure-pipelines.yml).
 
@@ -6,10 +10,10 @@ Azure DevOps pipeline definition: [`azure-pipelines.yml`](./azure-pipelines.yml)
 
 | Stage | Trigger | Purpose |
 |-------|---------|---------|
-| **Validate** | PR + main | Ruff format check + 28 pytest unit tests |
+| **Validate** | PR + main | Ruff format check (`classify_assets/`, `sync_classification/`, `function_app.py`) + pytest unit tests |
 | **Package** | PR + main | Install prod deps into `.python_packages/lib/site-packages`, zip the function |
 | **Deploy** | main only | `az functionapp deployment source config-zip` to `func-fabricsens-rh` (Flex Consumption) |
-| **Verify** | main only | `az functionapp function list` to confirm `classify_assets` is indexed |
+| **Verify** | main only | `az functionapp function list` to confirm both `classify_assets` and `sync_classification` are indexed |
 
 Triggered only by changes under `fabric-delta-table-sensitivity-purview-int/iac/function/**` so unrelated repo edits don't fire it.
 

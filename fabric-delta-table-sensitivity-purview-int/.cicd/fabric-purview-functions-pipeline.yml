@@ -3,7 +3,7 @@
 # Purview Classification Function (fabric-delta-table-sensitivity-purview-int)
 #
 # Stages:
-#   1. Validate — Lint (ruff), unit tests (pytest, 28 tests)
+#   1. Validate — Lint (ruff), unit tests (pytest)
 #   2. Package  — Install prod deps to .python_packages, zip the function
 #   3. Deploy   — Zip-deploy to existing Flex Consumption Function App
 #                 (main branch only)
@@ -112,7 +112,7 @@ stages:
           - ${{ if eq(parameters.runLint, true) }}:
               - script: |
                   set -euo pipefail
-                  ruff format --config "format.quote-style='single'" --check classify_assets/ function_app.py
+                  ruff format --check classify_assets/ sync_classification/ function_app.py
                 displayName: 'Ruff format check'
                 workingDirectory: $(functionRoot)
 
@@ -120,7 +120,7 @@ stages:
               - script: |
                   set -euo pipefail
                   python -m pytest tests/ -x --tb=short --junitxml=$(Build.ArtifactStagingDirectory)/test-results.xml
-                displayName: 'Run pytest (28 tests)'
+                displayName: 'Run pytest'
                 workingDirectory: $(functionRoot)
 
               - task: PublishTestResults@2
@@ -129,7 +129,7 @@ stages:
                 inputs:
                   testResultsFormat: JUnit
                   testResultsFiles: $(Build.ArtifactStagingDirectory)/test-results.xml
-                  testRunTitle: 'classify_assets unit tests'
+                  testRunTitle: 'function unit tests (classify_assets + sync_classification)'
 
   # =========================================================================
   # STAGE 2: Package (build deployment zip)
@@ -261,8 +261,14 @@ stages:
                   --query "[].name" -o tsv)
                 echo "Functions discovered:"
                 echo "$FUNCS"
-                if ! echo "$FUNCS" | grep -q "classify_assets"; then
-                  echo "##[error]classify_assets function not indexed on $(FUNCTION_APP_NAME)"
+                MISSING=()
+                for fn in classify_assets sync_classification; do
+                  if ! echo "$FUNCS" | grep -q "$fn"; then
+                    MISSING+=("$fn")
+                  fi
+                done
+                if [ ${#MISSING[@]} -gt 0 ]; then
+                  echo "##[error]Functions not indexed on $(FUNCTION_APP_NAME): ${MISSING[*]}"
                   exit 1
                 fi
-                echo "##[section]classify_assets is indexed and ready."
+                echo "##[section]classify_assets and sync_classification are indexed and ready."
