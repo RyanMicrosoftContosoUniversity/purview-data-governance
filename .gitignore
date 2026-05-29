@@ -14,7 +14,7 @@ scripts/fabric_audit_env.env
 *.log
 do_not_commit/*
 terraform-notes/*
-
+fabric-delta-table-sensitivity-purview-int\.local/*
 
 # output files
 scripts\cost-analysis\output
