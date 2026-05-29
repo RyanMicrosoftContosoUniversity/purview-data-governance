@@ -1,3 +1,23 @@
+# =============================================================================
+# Purview: account lookup, classification typedefs, Atlas notification wiring
+# =============================================================================
+# The Purview account itself is NOT managed by this module (it predates the
+# project). We look it up by name and reference it via a constructed ARM ID.
+
+# Existing Purview account ARM ID (constructed; account is not managed here).
+locals {
+  purview_account_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.phase2_resource_group}/providers/Microsoft.Purview/accounts/${var.purview_account_name}"
+}
+
+# azapi lookup of the Purview account (used to read its system-assigned MI
+# principal_id when granting it Contributor on the Atlas-notification EH).
+data "azapi_resource" "purview_account" {
+  type      = "Microsoft.Purview/accounts@2021-12-01"
+  name      = var.purview_account_name
+  parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.phase2_resource_group}"
+}
+
+# --- Custom classification typedefs ----------------------------------------
 locals {
   classification_defs = {
     for level, suffix in var.sensitivity_levels :
@@ -53,4 +73,32 @@ resource "restapi_object" "classification" {
     structDefs           = []
     businessMetadataDefs = []
   })
+}
+
+# --- Purview kafkaConfigurations (BYO Event Hub for Atlas notifications) ----
+# Purview's kafkaConfigurations resource isn't modeled in azurerm, so use
+# azapi. Requires `purview_eh_contributor` RBAC to be in place first
+# (Purview MI must be Contributor on the EH namespace) — enforced via
+# depends_on so plan/apply ordering is correct.
+resource "azapi_resource" "purview_atlas_notification_config" {
+  type      = "Microsoft.Purview/accounts/kafkaConfigurations@2021-12-01"
+  name      = "atlas-notification-config"
+  parent_id = local.purview_account_id
+
+  body = {
+    properties = {
+      eventHubResourceId  = azurerm_eventhub.atlas_notifications.id
+      eventHubType        = "Notification"
+      eventStreamingState = "Enabled"
+      eventStreamingType  = "Azure"
+      consumerGroup       = "$Default"
+      credentials = {
+        type = "SystemAssigned"
+      }
+    }
+  }
+
+  depends_on = [
+    azurerm_role_assignment.purview_eh_contributor,
+  ]
 }

@@ -44,6 +44,9 @@ os.environ.setdefault(
 )
 
 # 2. Patch DefaultAzureCredential so module load doesn't try to authenticate.
+#    Skip the patch when running integration tests — those need real Azure
+#    credentials (e.g. AzureCLI@2 in CI, `az login` locally) and the env vars
+#    above are *setdefault* so the real ones from the pipeline take precedence.
 _FAKE_TOKEN = SimpleNamespace(token="fake-token", expires_on=9999999999)
 
 
@@ -52,14 +55,20 @@ class _FakeCredential:
         return _FAKE_TOKEN
 
 
-_credential_patcher = patch(
-    "azure.identity.DefaultAzureCredential", return_value=_FakeCredential()
-)
-_credential_patcher.start()
+_RUNNING_INTEGRATION = os.environ.get("RUN_INTEGRATION_TESTS") == "1"
+
+if not _RUNNING_INTEGRATION:
+    _credential_patcher = patch(
+        "azure.identity.DefaultAzureCredential", return_value=_FakeCredential()
+    )
+    _credential_patcher.start()
+else:
+    _credential_patcher = None
 
 
 def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
-    _credential_patcher.stop()
+    if _credential_patcher is not None:
+        _credential_patcher.stop()
 
 
 # ---- Shared fixtures --------------------------------------------------------
