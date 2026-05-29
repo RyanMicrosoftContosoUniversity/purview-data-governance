@@ -111,7 +111,7 @@ stages:
                   set -euo pipefail
                   python -m pytest tests/ -x --tb=short --junitxml=$(Build.ArtifactStagingDirectory)/test-results.xml
                 displayName: 'Run pytest'
-                workingDirectory: $(functionRoot)
+                workingDirectory: fabric-delta-table-sensitivity-purview-int
 
               - task: PublishTestResults@2
                 displayName: 'Publish test results'

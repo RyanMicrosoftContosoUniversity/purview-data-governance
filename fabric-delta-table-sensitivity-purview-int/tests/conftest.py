@@ -19,9 +19,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Make the parent (function/) importable as a package root so tests can do
-# `from classify_assets.handler import ...` regardless of cwd.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+# Make src/function/ importable as a package root so tests can do
+# `from classify_assets.handler import ...` regardless of cwd. Tests live at
+# <repo>/fabric-delta-table-sensitivity-purview-int/tests/ and the function
+# code lives at <repo>/fabric-delta-table-sensitivity-purview-int/src/function/.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src" / "function"))
 
 # 1. Env vars consumed at import time by classify_assets/handler.py
 os.environ.setdefault("SOURCE_WORKSPACE_ID", "00000000-0000-0000-0000-00000000ws01")

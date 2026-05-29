@@ -39,8 +39,8 @@ Triggered only by changes under `fabric-delta-table-sensitivity-purview-int/src/
 ## Local equivalent
 
 ```powershell
-cd fabric-delta-table-sensitivity-purview-int/src/function
-pip install -r requirements-dev.txt
+cd fabric-delta-table-sensitivity-purview-int
+pip install -r src/function/requirements-dev.txt
 python -m pytest tests/ -x --tb=short
 # then deploy via terraform apply (which runs az functionapp deployment source config-zip)
 ```

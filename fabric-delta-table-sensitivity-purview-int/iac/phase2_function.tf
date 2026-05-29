@@ -59,7 +59,7 @@ data "archive_file" "function_zip" {
   type        = "zip"
   source_dir  = "${path.module}/../src/function"
   output_path = "${path.module}/function.zip"
-  excludes    = ["__pycache__", "local.settings.json", "tests", "requirements-dev.txt", ".pytest_cache", ".ruff_cache"]
+  excludes    = ["__pycache__", "local.settings.json", "requirements-dev.txt", ".pytest_cache", ".ruff_cache"]
 }
 
 resource "azurerm_storage_blob" "function_zip" {
