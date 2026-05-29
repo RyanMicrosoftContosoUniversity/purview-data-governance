@@ -400,7 +400,7 @@ stages:
                 for v in PURVIEW_ACCOUNT PURVIEW_RESOURCE_GROUP \
                          PURVIEW_DATA_SOURCE_NAME PURVIEW_SCAN_NAME \
                          PURVIEW_COLLECTION_ID SOURCE_WORKSPACE_ID \
-                         SOURCE_LAKEHOUSE_NAME; do
+                         SOURCE_LAKEHOUSE_ID SOURCE_LAKEHOUSE_NAME; do
                   # Indirect expansion: ${!v} is the value of the var named $v.
                   if [ -z "${!v:-}" ]; then MISSING+=("$v"); fi
                 done
@@ -423,6 +423,7 @@ stages:
               PURVIEW_SCAN_NAME: $(PURVIEW_SCAN_NAME)
               PURVIEW_COLLECTION_ID: $(PURVIEW_COLLECTION_ID)
               SOURCE_WORKSPACE_ID: $(SOURCE_WORKSPACE_ID)
+              SOURCE_LAKEHOUSE_ID: $(SOURCE_LAKEHOUSE_ID)
               SOURCE_LAKEHOUSE_NAME: $(SOURCE_LAKEHOUSE_NAME)
 
           - task: PublishTestResults@2

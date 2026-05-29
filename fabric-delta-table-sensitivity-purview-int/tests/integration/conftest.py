@@ -36,6 +36,7 @@ _REQUIRED_ENV_VARS = (
     "PURVIEW_COLLECTION_ID",
     # Fabric source under scan
     "SOURCE_WORKSPACE_ID",
+    "SOURCE_LAKEHOUSE_ID",
     "SOURCE_LAKEHOUSE_NAME",
     # Subscription (used to construct ARM resource IDs)
     "AZURE_SUBSCRIPTION_ID",
@@ -85,6 +86,7 @@ def integration_config() -> dict:
         "scan_name": _required_env("PURVIEW_SCAN_NAME"),
         "collection_id": _required_env("PURVIEW_COLLECTION_ID"),
         "workspace_id": _required_env("SOURCE_WORKSPACE_ID"),
+        "lakehouse_id": _required_env("SOURCE_LAKEHOUSE_ID"),
         "lakehouse_name": _required_env("SOURCE_LAKEHOUSE_NAME"),
         # Fixture-table name written + scanned + asserted on.
         # Underscore-only name is valid for Delta + Fabric.

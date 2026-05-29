@@ -55,12 +55,12 @@ def _atlas_headers(credential) -> dict:
     }
 
 
-def _table_uri(workspace_id: str, lakehouse_name: str, table: str) -> str:
-    # `lakehouse_name` here is what OneLake exposes as the leaf, but the API
-    # expects the lakehouse GUID. Fabric's OneLake also accepts the friendly
-    # name <lakehouse_name>.Lakehouse — both work for Tables/<x> paths.
+def _table_uri(workspace_id: str, lakehouse_id: str, table: str) -> str:
+    # OneLake REJECTS mixing a workspace GUID with a friendly lakehouse name
+    # (HTTP 400 FriendlyNameSupportDisabled). Use GUIDs for both segments.
+    # No `.Lakehouse` suffix is needed (or allowed) when addressing by GUID.
     return (
-        f"abfss://{workspace_id}@{ONELAKE_DFS}/{lakehouse_name}.Lakehouse"
+        f"abfss://{workspace_id}@{ONELAKE_DFS}/{lakehouse_id}"
         f"/Tables/{table}"
     )
 
@@ -69,11 +69,11 @@ def _table_uri(workspace_id: str, lakehouse_name: str, table: str) -> str:
 
 
 def _ensure_fixture_table(
-    credential, workspace_id: str, lakehouse_name: str, table: str, sensitivity: str
+    credential, workspace_id: str, lakehouse_id: str, table: str, sensitivity: str
 ) -> None:
     """Idempotent: create the table with the TBLPROPERTY if missing; assert
     the TBLPROPERTY value if it already exists."""
-    uri = _table_uri(workspace_id, lakehouse_name, table)
+    uri = _table_uri(workspace_id, lakehouse_id, table)
     opts = _storage_opts(credential)
     try:
         dt = DeltaTable(uri, storage_options=opts)
@@ -233,7 +233,7 @@ def test_e2e_scan_classifies_fixture_table(
     _ensure_fixture_table(
         az_credential,
         cfg["workspace_id"],
-        cfg["lakehouse_name"],
+        cfg["lakehouse_id"],
         cfg["fixture_table_name"],
         cfg["fixture_sensitivity"],
     )

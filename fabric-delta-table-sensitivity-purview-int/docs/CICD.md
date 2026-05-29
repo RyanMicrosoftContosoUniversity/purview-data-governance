@@ -36,6 +36,7 @@ Triggered only by changes under `fabric-delta-table-sensitivity-purview-int/src/
    | `PURVIEW_SCAN_NAME` | `integration-test-scan` | IntegrationTestE2E only |
    | `PURVIEW_COLLECTION_ID` | `bhhlid` | IntegrationTestE2E only |
    | `SOURCE_WORKSPACE_ID` | `a9574816-83cc-4629-b086-356e14c495c7` | IntegrationTestE2E only |
+   | `SOURCE_LAKEHOUSE_ID` | (Fabric lakehouse GUID — see Fabric portal → workspace → lakehouse → Settings → SQL endpoint or copy from URL) | IntegrationTestE2E only |
    | `SOURCE_LAKEHOUSE_NAME` | `sensitivity_metadata_lh` | IntegrationTestE2E only |
 
    The `PURVIEW_*` / `SOURCE_*` variables are only consumed when

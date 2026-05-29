@@ -61,6 +61,7 @@ $env:PURVIEW_DATA_SOURCE_NAME = "Fabric"
 $env:PURVIEW_SCAN_NAME = "integration-test-scan"
 $env:PURVIEW_COLLECTION_ID = "bhhlid"
 $env:SOURCE_WORKSPACE_ID = "a9574816-83cc-4629-b086-356e14c495c7"
+$env:SOURCE_LAKEHOUSE_ID = "<lakehouse-guid>"  # see Fabric portal -> workspace -> lakehouse
 $env:SOURCE_LAKEHOUSE_NAME = "sensitivity_metadata_lh"
 
 # Run
