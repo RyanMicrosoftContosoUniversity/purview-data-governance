@@ -168,8 +168,12 @@ stages:
           - script: |
               set -euo pipefail
               # Sanity check: confirm function_app.py is at the zip root.
-              unzip -l $(Build.ArtifactStagingDirectory)/function.zip | head -40
-              if ! unzip -l $(Build.ArtifactStagingDirectory)/function.zip | grep -q '^.* function_app\.py$'; then
+              # Capture listing to a file first to avoid SIGPIPE (141) from
+              # `unzip -l | head` under `set -o pipefail`.
+              ziplist="$(mktemp)"
+              unzip -l "$(Build.ArtifactStagingDirectory)/function.zip" > "$ziplist"
+              head -40 "$ziplist"
+              if ! grep -q '^.* function_app\.py$' "$ziplist"; then
                 echo "##[error]function_app.py not found at zip root"
                 exit 1
               fi
