@@ -19,17 +19,12 @@ trigger:
   branches:
     include:
       - main
+      - feature/*
   paths:
     include:
       - fabric-delta-table-sensitivity-purview-int/src/function/**
 
-pr:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - fabric-delta-table-sensitivity-purview-int/src/function/**
+pr: none
 
 # ---------------------------------------------------------------------------
 # Parameters — selectable at queue time
@@ -189,7 +184,10 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+          startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/')
+        ),
         eq('${{ parameters.deployFunction }}', true)
       )
     pool:

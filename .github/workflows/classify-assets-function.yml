@@ -360,8 +360,12 @@ jobs:
       - name: Verify zip contents
         run: |
           set -euo pipefail
-          unzip -l function.zip | head -40
-          if ! unzip -l function.zip | grep -q ' function_app\.py$'; then
+          # Capture listing to a file first to avoid SIGPIPE (141) from
+          # `unzip -l | head` under `set -o pipefail`.
+          ziplist="$(mktemp)"
+          unzip -l function.zip > "$ziplist"
+          head -40 "$ziplist"
+          if ! grep -q ' function_app\.py$' "$ziplist"; then
             echo "::error::function_app.py not found at zip root"
             exit 1
           fi
