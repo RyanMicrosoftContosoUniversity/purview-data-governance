@@ -392,19 +392,38 @@ stages:
               inlineScript: |
                 set -euo pipefail
                 cd fabric-delta-table-sensitivity-purview-int
+
+                # Fail fast if the variable group is missing the integration
+                # test variables (otherwise bash treats $(VAR) as command
+                # substitution and emits a confusing "command not found").
+                MISSING=()
+                for v in PURVIEW_ACCOUNT PURVIEW_RESOURCE_GROUP \
+                         PURVIEW_DATA_SOURCE_NAME PURVIEW_SCAN_NAME \
+                         PURVIEW_COLLECTION_ID SOURCE_WORKSPACE_ID \
+                         SOURCE_LAKEHOUSE_NAME; do
+                  # Indirect expansion: ${!v} is the value of the var named $v.
+                  if [ -z "${!v:-}" ]; then MISSING+=("$v"); fi
+                done
+                if [ ${#MISSING[@]} -gt 0 ]; then
+                  echo "##[error]Variable group 'purview-data-governance-dev' is missing required variables: ${MISSING[*]}"
+                  echo "##[error]Add them in ADO -> Pipelines -> Library. See docs/CICD.md."
+                  exit 1
+                fi
+
                 # Gate the parent conftest's credential-mock + signal the
                 # integration suite to actually collect.
                 export RUN_INTEGRATION_TESTS=1
-                export AZURE_SUBSCRIPTION_ID="$(AZURE_SUBSCRIPTION_ID)"
-                export PURVIEW_ACCOUNT="$(PURVIEW_ACCOUNT)"
-                export PURVIEW_RESOURCE_GROUP="$(PURVIEW_RESOURCE_GROUP)"
-                export PURVIEW_DATA_SOURCE_NAME="$(PURVIEW_DATA_SOURCE_NAME)"
-                export PURVIEW_SCAN_NAME="$(PURVIEW_SCAN_NAME)"
-                export PURVIEW_COLLECTION_ID="$(PURVIEW_COLLECTION_ID)"
-                export SOURCE_WORKSPACE_ID="$(SOURCE_WORKSPACE_ID)"
-                export SOURCE_LAKEHOUSE_NAME="$(SOURCE_LAKEHOUSE_NAME)"
                 python -m pytest tests/integration/ -v -s --tb=short \
                   --junitxml=$(Build.ArtifactStagingDirectory)/integration-results.xml
+            env:
+              AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+              PURVIEW_ACCOUNT: $(PURVIEW_ACCOUNT)
+              PURVIEW_RESOURCE_GROUP: $(PURVIEW_RESOURCE_GROUP)
+              PURVIEW_DATA_SOURCE_NAME: $(PURVIEW_DATA_SOURCE_NAME)
+              PURVIEW_SCAN_NAME: $(PURVIEW_SCAN_NAME)
+              PURVIEW_COLLECTION_ID: $(PURVIEW_COLLECTION_ID)
+              SOURCE_WORKSPACE_ID: $(SOURCE_WORKSPACE_ID)
+              SOURCE_LAKEHOUSE_NAME: $(SOURCE_LAKEHOUSE_NAME)
 
           - task: PublishTestResults@2
             displayName: 'Publish integration test results'
