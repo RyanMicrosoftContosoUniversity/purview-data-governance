@@ -27,3 +27,13 @@ output "classification_typedef_names" {
   description = "Names of the 4 custom classification typedefs created in Purview."
   value       = [for k, v in local.classification_defs : v.typedef_name]
 }
+
+output "atlas_notifications_event_hub_name" {
+  description = "Name of the Event Hub that receives Purview Atlas Notification messages."
+  value       = azurerm_eventhub.atlas_notifications.name
+}
+
+output "purview_atlas_notification_config_id" {
+  description = "Resource ID of the Purview kafkaConfigurations notification wiring."
+  value       = azapi_resource.purview_atlas_notification_config.id
+}

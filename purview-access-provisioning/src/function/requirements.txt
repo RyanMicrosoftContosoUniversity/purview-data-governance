@@ -1,0 +1,8 @@
+azure-functions
+azure-identity
+azure-keyvault-secrets
+azure-storage-queue
+azure-data-tables
+msal
+requests
+pydantic

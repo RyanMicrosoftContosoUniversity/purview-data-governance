@@ -57,7 +57,7 @@ resource "azurerm_service_plan" "func" {
 # Package the Function code (with vendored deps from .python_packages)
 data "archive_file" "function_zip" {
   type        = "zip"
-  source_dir  = "${path.module}/function"
+  source_dir  = "${path.module}/../src/function"
   output_path = "${path.module}/function.zip"
   excludes    = ["__pycache__", "local.settings.json", "tests", "requirements-dev.txt", ".pytest_cache", ".ruff_cache"]
 }
@@ -101,6 +101,9 @@ resource "azurerm_function_app_flex_consumption" "func" {
     PURVIEW_ENDPOINT                      = data.external.purview_catalog_endpoint.result.uri
     CLASSIFICATION_NAMESPACE              = var.classification_namespace
     SENSITIVITY_LEVEL_MAP_JSON            = jsonencode(var.sensitivity_levels)
+    SENSITIVITY_SEVERITY_ORDER_JSON       = jsonencode(var.sensitivity_severity_order)
+    DELETED_SENSITIVITY_VALUE             = var.deleted_sensitivity_value
+    ATLAS_NOTIFICATION_EVENT_HUB          = azurerm_eventhub.atlas_notifications.name
     # Identity-based AzureWebJobsStorage: only this prefixed setting is needed.
     # The host uses it to find host-level storage (host secrets, function key
     # store, scale-controller state, EH listener checkpoints/leases) over
@@ -112,11 +115,11 @@ resource "azurerm_function_app_flex_consumption" "func" {
     # no invocations, stale lease blobs) on Flex Consumption. The line was
     # removed deliberately; if azurerm starts auto-injecting a broken value,
     # use a `lifecycle { ignore_changes = ... }` block instead of re-adding it.
-    AzureWebJobsStorage__accountName      = azurerm_storage_account.func.name
+    AzureWebJobsStorage__accountName = azurerm_storage_account.func.name
     # Required for the Python v2 programming model: tells the host to discover
     # functions by importing function_app.py and reading its decorators
     # (instead of scanning per-function function.json files).
-    AzureWebJobsFeatureFlags               = "EnableWorkerIndexing"
+    AzureWebJobsFeatureFlags = "EnableWorkerIndexing"
     # Event Hub trigger uses identity-based binding. The connection name in
     # function_app.py is "PurviewEvents"; the host resolves the FQNS via this
     # prefixed setting and authenticates using the function's MI.
@@ -175,9 +178,9 @@ resource "azurerm_role_assignment" "func_storage_table" {
 # config-zip`. Re-runs whenever the zip hash changes.
 resource "null_resource" "function_deploy" {
   triggers = {
-    zip_sha256       = data.archive_file.function_zip.output_sha256
-    function_app_id  = azurerm_function_app_flex_consumption.func.id
-    storage_role_id  = azurerm_role_assignment.func_storage.id
+    zip_sha256      = data.archive_file.function_zip.output_sha256
+    function_app_id = azurerm_function_app_flex_consumption.func.id
+    storage_role_id = azurerm_role_assignment.func_storage.id
   }
 
   # The az CLI's post-deploy "host key check" sporadically returns exit 1
@@ -294,3 +297,48 @@ resource "azurerm_role_assignment" "func_eh_receiver" {
 # /policystore/metadataRoles/{id}/members 404s in this account (collection id
 # format / API surface inconsistent across Purview versions). Manual grant is
 # the supported path for now.
+
+# --- Purview Atlas notification Event Hub (BYO) -----------------------------
+# Purview's kafkaConfigurations resource isn't modeled in azurerm, so use
+# azapi for the Purview account lookup and the notification configuration.
+data "azapi_resource" "purview_account" {
+  type      = "Microsoft.Purview/accounts@2021-12-01"
+  name      = var.purview_account_name
+  parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.phase2_resource_group}"
+}
+
+resource "azurerm_eventhub" "atlas_notifications" {
+  name              = var.atlas_notification_eventhub_name
+  namespace_id      = azurerm_eventhub_namespace.purview_events.id
+  partition_count   = 4
+  message_retention = 1
+}
+
+resource "azurerm_role_assignment" "purview_eh_contributor" {
+  scope                = azurerm_eventhub_namespace.purview_events.id
+  role_definition_name = "Contributor"
+  principal_id         = data.azapi_resource.purview_account.identity[0].principal_id
+}
+
+resource "azapi_resource" "purview_atlas_notification_config" {
+  type      = "Microsoft.Purview/accounts/kafkaConfigurations@2021-12-01"
+  name      = "atlas-notification-config"
+  parent_id = local.purview_account_id
+
+  body = {
+    properties = {
+      eventHubResourceId  = azurerm_eventhub.atlas_notifications.id
+      eventHubType        = "Notification"
+      eventStreamingState = "Enabled"
+      eventStreamingType  = "Azure"
+      consumerGroup       = "$Default"
+      credentials = {
+        type = "SystemAssigned"
+      }
+    }
+  }
+
+  depends_on = [
+    azurerm_role_assignment.purview_eh_contributor,
+  ]
+}

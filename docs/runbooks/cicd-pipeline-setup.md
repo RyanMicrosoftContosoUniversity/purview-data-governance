@@ -2,11 +2,11 @@
 
 ## Overview
 
-The `azure-pipelines.yml` pipeline has 5 stages that run in order:
+The `fabric-purview-purview-access-provisioning/src/function-pipeline.yml` pipeline has 5 stages that run in order:
 
 ```
 ┌──────────┐    ┌────────────────┐    ┌─────────────────┐    ┌───────────┐    ┌──────────┐
-│ Validate │───▶│ Infrastructure │───▶│ App Registration│    │ Functions │───▶│ Workflow │
+│ Validate │───▶│ Infrastructure │───▶│ App Registration│    │ purview-access-provisioning/src/function │───▶│ Workflow │
 │ (always) │    │ (Bicep)        │    │ (manual only)   │    │ (deploy)  │    │ (Purview)│
 └──────────┘    └───────┬────────┘    └─────────────────┘    └───────────┘    └──────────┘
                         │                                          ▲
@@ -16,7 +16,7 @@ The `azure-pipelines.yml` pipeline has 5 stages that run in order:
 - **Validate** — Always runs. Lints Bicep, compiles Python, parses JSON.
 - **Infrastructure** — Deploys Azure resources via Bicep (skipped on PRs).
 - **App Registration** — Creates the SPN. **Off by default** — run once per environment.
-- **Functions** — Builds and deploys the Python Azure Functions.
+- **purview-access-provisioning/src/function** — Builds and deploys the Python Azure purview-access-provisioning/src/function.
 - **Workflow** — Deploys the Purview workflow definition.
 
 ## Prerequisites
@@ -82,7 +82,7 @@ Add approval gates on `staging` and `prod` environments for manual sign-off befo
 
 ### Subsequent Deployments
 
-- Code changes to `functions/` or `workflows/` auto-trigger the pipeline.
+- Code changes to `purview-access-provisioning/src/function/` or `purview-access-provisioning/src/workflows/` auto-trigger the pipeline.
 - Infrastructure and App Registration are **skipped** by default (toggle on if needed).
 - PR builds only run the **Validate** stage.
 
@@ -104,9 +104,9 @@ Pipeline Parameters:
 | Event | Stages Run |
 |-------|-----------|
 | PR to `main` | Validate only |
-| Push to `main` (infra/ changed) | Validate → Infra → Functions → Workflow |
-| Push to `main` (functions/ changed) | Validate → Infra → Functions → Workflow |
-| Push to `main` (workflows/ changed) | Validate → Infra → Functions → Workflow |
+| Push to `main` (purview-access-provisioning/iac/ changed) | Validate → Infra → purview-access-provisioning/src/function → Workflow |
+| Push to `main` (purview-access-provisioning/src/function/ changed) | Validate → Infra → purview-access-provisioning/src/function → Workflow |
+| Push to `main` (purview-access-provisioning/src/workflows/ changed) | Validate → Infra → purview-access-provisioning/src/function → Workflow |
 | Manual queue | User-selected stages |
 
 ## Troubleshooting
@@ -118,4 +118,4 @@ Pipeline Parameters:
 | Bicep what-if fails | Ensure the resource group exists and service connection has Contributor |
 | Function deploy 403 | Service connection needs Contributor on the Function App |
 | Workflow deploy 401 | The `az login` session in the pipeline must have Purview API access |
-| Output variables empty | Ensure Infrastructure stage ran; Functions stage reads outputs from it |
+| Output variables empty | Ensure Infrastructure stage ran; purview-access-provisioning/src/function stage reads outputs from it |

@@ -355,7 +355,7 @@ jobs:
             -x 'local.settings.json' \
             -x 'local.settings.json.example' \
             -x 'CICD.md' \
-            -x 'azure-pipelines.yml'
+            -x 'fabric-purview-functions-pipeline.yml'
 
       - name: Verify zip contents
         run: |
