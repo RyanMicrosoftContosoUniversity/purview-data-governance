@@ -57,3 +57,21 @@ variable "sensitivity_levels" {
     "public"              = "Public"
   }
 }
+
+variable "atlas_notification_eventhub_name" {
+  description = "Name of the Event Hub (inside ehns-fabricsens-rh) that receives Purview Atlas Notification messages."
+  type        = string
+  default     = "atlas-notifications"
+}
+
+variable "sensitivity_severity_order" {
+  description = "Ordered list (highest severity first) used as a tiebreaker when multiple Sensitivity.* classifications are attached to one entity."
+  type        = list(string)
+  default     = ["HighlyConfidential", "Confidential", "General", "Public"]
+}
+
+variable "deleted_sensitivity_value" {
+  description = "TBLPROPERTY value written to a Delta table when its Sensitivity.* classification is removed from Purview."
+  type        = string
+  default     = "None"
+}

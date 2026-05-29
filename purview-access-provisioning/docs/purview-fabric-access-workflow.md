@@ -52,12 +52,12 @@
 
 | Component | Type | Purpose |
 |-----------|------|---------|
-| `infra/` | Bicep IaC | Function App, Storage Account + Queue, Key Vault, App Insights |
-| `scripts/setup-app-registration.ps1` | PowerShell | Create Entra ID SPN with Fabric + Purview API permissions |
-| `functions/shared/` | Python modules | Auth (MSAL), Fabric client, Purview client, Pydantic models |
-| `functions/servicenow_stub/` | Azure Functions | Simulates ServiceNow ticket creation and approval |
-| `functions/fabric_provisioner/` | Azure Function | Queue trigger → Fabric API → Purview callback |
-| `workflows/` | JSON + Python | Purview workflow definition + deployment script |
+| `purview-access-provisioning/iac/` | Bicep IaC | Function App, Storage Account + Queue, Key Vault, App Insights |
+| `purview-access-provisioning/scripts/setup-app-registration.ps1` | PowerShell | Create Entra ID SPN with Fabric + Purview API permissions |
+| `purview-access-provisioning/src/function/shared/` | Python modules | Auth (MSAL), Fabric client, Purview client, Pydantic models |
+| `purview-access-provisioning/src/function/servicenow_stub/` | Azure purview-access-provisioning/src/function | Simulates ServiceNow ticket creation and approval |
+| `purview-access-provisioning/src/function/fabric_provisioner/` | Azure Function | Queue trigger → Fabric API → Purview callback |
+| `purview-access-provisioning/src/workflows/` | JSON + Python | Purview workflow definition + deployment script |
 
 ---
 
@@ -67,8 +67,8 @@
 |-------------|---------|
 | Azure subscription | With permissions to create resource groups, Function Apps, Storage, Key Vault |
 | Azure CLI | v2.50+ with `bicep` extension installed |
-| Python | 3.11+ (for Azure Functions and deploy scripts) |
-| Azure Functions Core Tools | v4.x (`npm i -g azure-functions-core-tools@4`) |
+| Python | 3.11+ (for Azure purview-access-provisioning/src/function and deploy scripts) |
+| Azure purview-access-provisioning/src/function Core Tools | v4.x (`npm i -g azure-purview-access-provisioning/src/function-core-tools@4`) |
 | Microsoft Purview account | With Workflow Admin permissions |
 | Microsoft Fabric workspace | Target workspace for access provisioning |
 | Entra ID permissions | Ability to create App Registrations and grant admin consent |
@@ -120,15 +120,15 @@ cd scripts
 ### Step 3 — Configure Local Development (Optional)
 
 ```powershell
-cd functions
+cd purview-access-provisioning/src/function
 cp local.settings.json.example local.settings.json
 # Edit local.settings.json with actual values from Steps 1 and 2
 ```
 
-### Step 4 — Deploy Azure Functions
+### Step 4 — Deploy Azure purview-access-provisioning/src/function
 
 ```powershell
-cd functions
+cd purview-access-provisioning/src/function
 
 # Install dependencies
 pip install -r requirements.txt
@@ -158,7 +158,7 @@ python deploy-workflow.py `
 
 | Check | How |
 |-------|-----|
-| Function App running | Azure portal → Function App → Functions → verify 4 functions listed |
+| Function App running | Azure portal → Function App → functions → verify 4 functions listed |
 | Queue exists | Azure portal → Storage Account → Queues → `purview-access-requests` |
 | Key Vault secret | Azure portal → Key Vault → Secrets → `spn-client-secret` |
 | Workflow active | Purview portal → Management → Workflows → verify workflow is enabled |
@@ -224,8 +224,8 @@ When you have a real ServiceNow environment:
    - Store ServiceNow credentials in Key Vault
    - Update the Purview workflow HTTP step to include ServiceNow auth headers
 
-4. **Remove the stub functions** (optional):
-   - Delete `functions/servicenow_stub/` once real integration is confirmed working
+4. **Remove the stub purview-access-provisioning/src/function** (optional):
+   - Delete `purview-access-provisioning/src/function/servicenow_stub/` once real integration is confirmed working
 
 ---
 

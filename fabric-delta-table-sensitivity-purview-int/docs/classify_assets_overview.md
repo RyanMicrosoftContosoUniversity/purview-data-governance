@@ -10,7 +10,7 @@ This solution is aimed at applying classifications to data in Fabric at the tabl
 
 
 
-![classify_assets architecture overview](../docs/images/classify_assets_overview.png)
+![classify_assets architecture overview](../../docs/images/classify_assets_overview.png)
 
 ## What this diagram shows
 
@@ -133,7 +133,7 @@ shows the `data-sensitivity=General` entry inside `Table Properties` — this
 is exactly what the function reads from `_delta_log` to decide which Purview
 classification to apply:
 
-![DESCRIBE EXTENDED on the appointments Delta table showing data-sensitivity=General in Table Properties](../docs/images/describe_appointments_delta_tbl.png)
+![DESCRIBE EXTENDED on the appointments Delta table showing data-sensitivity=General in Table Properties](../../docs/images/describe_appointments_delta_tbl.png)
 
 When Purview runs a scan, each status transition is emitted as a
 `ScanStatusLogEvent` and routed through the diagnostic pipeline into the
@@ -143,7 +143,7 @@ carrying scan metadata (`scanName`, `scanResultId`, `dataSourceName`,
 counts) but **no per-asset detail** — which is why the function still has
 to walk the lakehouse itself:
 
-![Event Hub view of purview-scan-status showing ScanStatusLogEvent envelopes with scan metadata and resultType=Running](../docs/images/eh_purview_scan_event.png)
+![Event Hub view of purview-scan-status showing ScanStatusLogEvent envelopes with scan metadata and resultType=Running](../../docs/images/eh_purview_scan_event.png)
 
 The Function App's invocation log shows the corresponding end-to-end trace
 for one of those events: the EH trigger fires
@@ -153,7 +153,7 @@ acquires a token via IMDS, and the lakehouse walk reports
 `Discovered 4 tables under lakehouse sensitivity_metadata_lh` before
 classifying each one:
 
-![Application Insights invocation details for classify_assets showing EH trigger, batch parse, MI token acquisition, and lakehouse table discovery](../docs/images/classify_assets_function_invocation.png)
+![Application Insights invocation details for classify_assets showing EH trigger, batch parse, MI token acquisition, and lakehouse table discovery](../../docs/images/classify_assets_function_invocation.png)
 
 The end result is visible in the Purview Unified Catalog: the
 `appointments` Lakehouse Table asset now carries a `Sensitivity.General`
@@ -162,7 +162,7 @@ asset's hierarchy (`sensitivity-metadata-ws` → `sensitivity_metadata_lh`
 → `appointments`) and fully qualified name confirm it's the same Delta
 table whose `TBLPROPERTIES` were read in the screenshot above:
 
-![Purview Unified Catalog page for the appointments Lakehouse Table asset showing the Sensitivity.General classification applied by the function](../docs/images/purview_appointments_table_data_asset.png)
+![Purview Unified Catalog page for the appointments Lakehouse Table asset showing the Sensitivity.General classification applied by the function](../../docs/images/purview_appointments_table_data_asset.png)
 
 ## Notes
 

@@ -19,6 +19,3 @@ function.zip
 # Terraform plan files
 tfplan*
 *.tfplan
-
-# Linter caches
-function/.ruff_cache/

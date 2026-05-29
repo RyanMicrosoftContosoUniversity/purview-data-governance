@@ -16,11 +16,11 @@ trigger:
       - main
   paths:
     include:
-      - infra/**
-      - functions/**
-      - workflows/**
-      - scripts/setup-app-registration.ps1
-      - scripts/deploy-workflow.py
+      - purview-access-provisioning/iac/**
+      - purview-access-provisioning/src/function/**
+      - purview-access-provisioning/src/workflows/**
+      - purview-access-provisioning/scripts/setup-app-registration.ps1
+      - purview-access-provisioning/scripts/deploy-workflow.py
 
 pr:
   branches:
@@ -28,9 +28,9 @@ pr:
       - main
   paths:
     include:
-      - infra/**
-      - functions/**
-      - workflows/**
+      - purview-access-provisioning/iac/**
+      - purview-access-provisioning/src/function/**
+      - purview-access-provisioning/src/workflows/**
 
 # ---------------------------------------------------------------------------
 # Parameters — selectable at queue time
@@ -51,7 +51,7 @@ parameters:
     default: true
 
   - name: deployFunctions
-    displayName: Deploy Azure Functions
+    displayName: Deploy Azure purview-access-provisioning/src/function
     type: boolean
     default: true
 
@@ -87,7 +87,7 @@ variables:
   - name: pythonVersion
     value: '3.11'
   - name: functionAppFolder
-    value: functions
+    value: purview-access-provisioning/src/function
 
 # ---------------------------------------------------------------------------
 # Stage 1: Validate
@@ -110,10 +110,10 @@ stages:
               inlineScript: |
                 set -e
                 echo "=== Bicep Lint ==="
-                az bicep lint --file infra/main.bicep
+                az bicep lint --file purview-access-provisioning/iac/main.bicep
 
                 echo "=== Bicep Build ==="
-                az bicep build --file infra/main.bicep --stdout > /dev/null
+                az bicep build --file purview-access-provisioning/iac/main.bicep --stdout > /dev/null
                 echo "✅ Bicep templates are valid"
 
           - task: AzureCLI@2
@@ -126,8 +126,8 @@ stages:
                 set -e
                 az deployment group what-if \
                   --resource-group "$(RESOURCE_GROUP_NAME)" \
-                  --template-file infra/main.bicep \
-                  --parameters infra/parameters.json \
+                  --template-file purview-access-provisioning/iac/main.bicep \
+                  --parameters purview-access-provisioning/iac/parameters.json \
                   --parameters environmentName=$(environmentName)
             condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
@@ -143,17 +143,17 @@ stages:
           - script: |
               set -e
               echo "=== Compile Check ==="
-              find functions/ -name "*.py" | while read f; do
+              find purview-access-provisioning/src/function/ -name "*.py" | while read f; do
                 python -m py_compile "$f" && echo "  ✅ $f"
               done
 
               echo ""
               echo "=== Install dependencies for import check ==="
-              pip install -r functions/requirements.txt --quiet
+              pip install -r purview-access-provisioning/src/function/requirements.txt --quiet
 
               echo ""
               echo "=== Import Check (shared modules) ==="
-              cd functions
+              cd purview-access-provisioning/src/function
               python -c "from shared.models import AccessRequestMessage, FabricRole, ProvisioningResult; print('  ✅ models')"
               python -c "from shared.auth import get_spn_credentials, get_fabric_token; print('  ✅ auth')"
               python -c "from shared.fabric_client import FabricClient; print('  ✅ fabric_client')"
@@ -169,14 +169,14 @@ stages:
               set -e
               echo "=== JSON Validation ==="
               for f in \
-                functions/host.json \
-                functions/local.settings.json.example \
-                functions/servicenow_stub/create_ticket/function.json \
-                functions/servicenow_stub/approve_tickets/function.json \
-                functions/servicenow_stub/approval_callback/function.json \
-                functions/fabric_provisioner/provision_access/function.json \
-                workflows/access-request-workflow.json \
-                infra/parameters.json; do
+                purview-access-provisioning/src/function/host.json \
+                purview-access-provisioning/src/function/local.settings.json.example \
+                purview-access-provisioning/src/function/servicenow_stub/create_ticket/function.json \
+                purview-access-provisioning/src/function/servicenow_stub/approve_tickets/function.json \
+                purview-access-provisioning/src/function/servicenow_stub/approval_callback/function.json \
+                purview-access-provisioning/src/function/fabric_provisioner/provision_access/function.json \
+                purview-access-provisioning/src/workflows/access-request-workflow.json \
+                purview-access-provisioning/iac/parameters.json; do
                 python -c "import json; json.load(open('$f'))" && echo "  ✅ $f"
               done
             displayName: Parse all JSON files
@@ -227,8 +227,8 @@ stages:
                       OUTPUTS=$(az deployment group create \
                         --name "$DEPLOYMENT_NAME" \
                         --resource-group "$(RESOURCE_GROUP_NAME)" \
-                        --template-file infra/main.bicep \
-                        --parameters infra/parameters.json \
+                        --template-file purview-access-provisioning/iac/main.bicep \
+                        --parameters purview-access-provisioning/iac/parameters.json \
                         --parameters environmentName=$(environmentName) \
                         --query "properties.outputs" \
                         --output json)
@@ -277,7 +277,7 @@ stages:
                   inputs:
                     azureSubscription: $(serviceConnection)
                     ScriptType: FilePath
-                    ScriptPath: scripts/setup-app-registration.ps1
+                    ScriptPath: purview-access-provisioning/scripts/setup-app-registration.ps1
                     ScriptArguments: >-
                       -KeyVaultName "$(KEY_VAULT_NAME)"
                       -FabricWorkspaceId "$(FABRIC_WORKSPACE_ID)"
@@ -288,14 +288,14 @@ stages:
   # Stage 4: Deploy Azure Functions
   # ---------------------------------------------------------------------------
   - stage: Functions
-    displayName: '⚡ Azure Functions'
+    displayName: '⚡ Azure purview-access-provisioning/src/function'
     dependsOn: Infrastructure
     condition: and(succeeded(), eq('${{ parameters.deployFunctions }}', 'true'), ne(variables['Build.Reason'], 'PullRequest'))
     variables:
       FUNC_APP_NAME: $[ stageDependencies.Infrastructure.DeployInfra.outputs['DeployInfra.BicepDeploy.FUNC_APP_NAME'] ]
     jobs:
       - deployment: DeployFunctions
-        displayName: Build and Deploy Functions
+        displayName: Build and Deploy purview-access-provisioning/src/function
         environment: purview-fabric-${{ parameters.environment }}
         pool:
           vmImage: ubuntu-latest
@@ -317,7 +317,7 @@ stages:
                   displayName: Install Python dependencies
 
                 - task: ArchiveFiles@2
-                  displayName: Package Functions
+                  displayName: Package purview-access-provisioning/src/function
                   inputs:
                     rootFolderOrFile: $(functionAppFolder)
                     includeRootFolder: false
@@ -326,7 +326,7 @@ stages:
                     replaceExistingArchive: true
 
                 - task: AzureFunctionApp@2
-                  displayName: Deploy to Azure Functions
+                  displayName: Deploy to Azure purview-access-provisioning/src/function
                   inputs:
                     azureSubscription: $(serviceConnection)
                     appType: functionAppLinux
@@ -410,9 +410,9 @@ stages:
                       echo "  Approver:        $(APPROVER_EMAIL)"
                       echo "  Collection:      $(PURVIEW_COLLECTION_ID)"
 
-                      python scripts/deploy-workflow.py \
+                      python purview-access-provisioning/scripts/deploy-workflow.py \
                         --purview-account "$(PURVIEW_ACCOUNT_NAME)" \
-                        --workflow-file workflows/access-request-workflow.json \
+                        --workflow-file purview-access-provisioning/src/workflows/access-request-workflow.json \
                         --servicenow-url "https://$(FUNC_HOSTNAME)" \
                         --approver-email "$(APPROVER_EMAIL)" \
                         --collection-id "$(PURVIEW_COLLECTION_ID)"

@@ -9,7 +9,7 @@
 #                 (main branch only)
 #   4. Verify   — Confirm function is indexed and listener healthy
 #
-# Triggers only on changes under iac/function/**.
+# Triggers only on changes under src/function/**.
 # Assumes infra (Function App, Storage, App Insights, role assignments) is
 # already provisioned via `terraform apply` in iac/. This pipeline only
 # updates the function code.
@@ -21,7 +21,7 @@ trigger:
       - main
   paths:
     include:
-      - fabric-delta-table-sensitivity-purview-int/iac/function/**
+      - fabric-delta-table-sensitivity-purview-int/src/function/**
 
 pr:
   branches:
@@ -29,7 +29,7 @@ pr:
       - main
   paths:
     include:
-      - fabric-delta-table-sensitivity-purview-int/iac/function/**
+      - fabric-delta-table-sensitivity-purview-int/src/function/**
 
 # ---------------------------------------------------------------------------
 # Parameters — selectable at queue time
@@ -57,15 +57,13 @@ parameters:
     type: boolean
     default: true
 
-# ---------------------------------------------------------------------------
-# Variables — override per-environment via variable group
-# ---------------------------------------------------------------------------
+
 variables:
   - group: purview-data-governance-${{ parameters.environment }}
   # Expected variables in the group:
-  #   AZURE_SUBSCRIPTION_ID   - 910ebf13-1058-405d-b6cf-eda03e5288d1
-  #   RESOURCE_GROUP_NAME     - governance-rg
-  #   FUNCTION_APP_NAME       - func-fabricsens-rh
+  #   AZURE_SUBSCRIPTION_ID   - SUB ID
+  #   RESOURCE_GROUP_NAME     - RG
+  #   FUNCTION_APP_NAME       - FUNC APP NAME
 
   - name: serviceConnection
     value: sc-purview-data-governance-${{ parameters.environment }}
@@ -74,19 +72,13 @@ variables:
     value: '3.11'
 
   - name: functionRoot
-    value: fabric-delta-table-sensitivity-purview-int/iac/function
+    value: fabric-delta-table-sensitivity-purview-int/src/function
 
   - name: vmImage
     value: ubuntu-latest
 
-# ---------------------------------------------------------------------------
-# Stages
-# ---------------------------------------------------------------------------
-stages:
 
-  # =========================================================================
-  # STAGE 1: Validate (lint + unit tests)
-  # =========================================================================
+stages:
   - stage: Validate
     displayName: 'Validate (lint + tests)'
     pool:

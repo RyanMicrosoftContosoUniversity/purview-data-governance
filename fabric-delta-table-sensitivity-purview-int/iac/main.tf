@@ -13,7 +13,7 @@ resource "fabric_notebook" "this" {
 
   definition = {
     "notebook-content.ipynb" = {
-      source = "${path.module}/notebook/create_sensitivity_tables.ipynb"
+      source = "${path.module}/../src/notebook/create_sensitivity_tables.ipynb"
       tokens = {
         workspace_id   = var.workspace_id
         lakehouse_id   = fabric_lakehouse.this.id

@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "<your-storage-connection-string>",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "KEY_VAULT_URI": "https://<your-keyvault-name>.vault.azure.net/",
+    "QUEUE_NAME": "purview-access-requests",
+    "STORAGE_QUEUE_CONNECTION": "<your-storage-queue-connection-string>",
+    "PURVIEW_ACCOUNT_NAME": "<your-purview-account-name>",
+    "FABRIC_DEFAULT_ROLE": "Viewer",
+    "SPN_CLIENT_ID": "<local-dev-only-client-id>",
+    "SPN_CLIENT_SECRET": "<local-dev-only-client-secret>",
+    "SPN_TENANT_ID": "<your-tenant-id>",
+    "SERVICENOW_STUB_URL": "http://localhost:7071/api/servicenow-stub"
+  }
+}

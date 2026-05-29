@@ -4,7 +4,7 @@ Covers both `classify_assets` (Fabric → Purview) and `sync_classification`
 (Purview → Fabric) — they live in the same Function App and are deployed
 together.
 
-Azure DevOps pipeline definition: [`azure-pipelines.yml`](./azure-pipelines.yml).
+Azure DevOps pipeline definition: [`fabric-purview-functions-pipeline.yml`](../.cicd/fabric-purview-functions-pipeline.yml).
 
 ## What it does
 
@@ -15,7 +15,7 @@ Azure DevOps pipeline definition: [`azure-pipelines.yml`](./azure-pipelines.yml)
 | **Deploy** | main only | `az functionapp deployment source config-zip` to `func-fabricsens-rh` (Flex Consumption) |
 | **Verify** | main only | `az functionapp function list` to confirm both `classify_assets` and `sync_classification` are indexed |
 
-Triggered only by changes under `fabric-delta-table-sensitivity-purview-int/iac/function/**` so unrelated repo edits don't fire it.
+Triggered only by changes under `fabric-delta-table-sensitivity-purview-int/src/function/**` so unrelated repo edits don't fire it.
 
 ## One-time ADO setup
 
@@ -39,7 +39,7 @@ Triggered only by changes under `fabric-delta-table-sensitivity-purview-int/iac/
 ## Local equivalent
 
 ```powershell
-cd fabric-delta-table-sensitivity-purview-int/iac/function
+cd fabric-delta-table-sensitivity-purview-int/src/function
 pip install -r requirements-dev.txt
 python -m pytest tests/ -x --tb=short
 # then deploy via terraform apply (which runs az functionapp deployment source config-zip)
