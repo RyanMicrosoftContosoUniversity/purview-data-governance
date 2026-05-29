@@ -91,7 +91,7 @@ def test_sync_impl_updates_delta_property_from_single_classification(
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {'data-sensitivity': 'public'}
 
-    with patch('sync_classification.handler.DeltaTable', return_value=fake_dt) as delta_table:
+    with patch('shared_utils.sync_classification_helpers.DeltaTable', return_value=fake_dt) as delta_table:
         sync_classification_impl([make_eh_event(_entity_payload(workspace_id, lakehouse_id))])
 
     delta_table.assert_called()
@@ -113,7 +113,7 @@ def test_sync_impl_skips_when_table_already_in_sync(
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {'data-sensitivity': ' Confidential '}
 
-    with patch('sync_classification.handler.DeltaTable', return_value=fake_dt):
+    with patch('shared_utils.sync_classification_helpers.DeltaTable', return_value=fake_dt):
         sync_classification_impl([make_eh_event(_entity_payload(workspace_id, lakehouse_id))])
 
     fake_dt.alter.set_table_properties.assert_not_called()
@@ -136,7 +136,7 @@ def test_sync_impl_chooses_highest_severity_when_multiple_match(
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {'data-sensitivity': 'public'}
 
-    with patch('sync_classification.handler.DeltaTable', return_value=fake_dt):
+    with patch('shared_utils.sync_classification_helpers.DeltaTable', return_value=fake_dt):
         sync_classification_impl([make_eh_event(_entity_payload(workspace_id, lakehouse_id))])
 
     fake_dt.alter.set_table_properties.assert_called_once_with(
@@ -157,7 +157,7 @@ def test_sync_impl_uses_deleted_value_when_no_sensitivity_classification(
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {'data-sensitivity': 'public'}
 
-    with patch('sync_classification.handler.DeltaTable', return_value=fake_dt):
+    with patch('shared_utils.sync_classification_helpers.DeltaTable', return_value=fake_dt):
         sync_classification_impl([make_eh_event(_entity_payload(workspace_id, lakehouse_id))])
 
     fake_dt.alter.set_table_properties.assert_called_once_with({'data-sensitivity': 'None'})
@@ -176,7 +176,7 @@ def test_sync_impl_deduplicates_guids_within_batch(
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {'data-sensitivity': 'public'}
 
-    with patch('sync_classification.handler.DeltaTable', return_value=fake_dt):
+    with patch('shared_utils.sync_classification_helpers.DeltaTable', return_value=fake_dt):
         sync_classification_impl(
             [
                 make_eh_event(_entity_payload(workspace_id, lakehouse_id, guid='g1')),

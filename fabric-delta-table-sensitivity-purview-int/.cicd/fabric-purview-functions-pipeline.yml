@@ -102,7 +102,7 @@ stages:
           - ${{ if eq(parameters.runLint, true) }}:
               - script: |
                   set -euo pipefail
-                  ruff format --check classify_assets/ sync_classification/ function_app.py
+                  ruff format --check classify_assets/ sync_classification/ shared_utils/ function_app.py
                 displayName: 'Ruff format check'
                 workingDirectory: $(functionRoot)
 

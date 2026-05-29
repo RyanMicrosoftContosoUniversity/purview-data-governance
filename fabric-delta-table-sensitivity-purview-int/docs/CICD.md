@@ -10,7 +10,7 @@ Azure DevOps pipeline definition: [`fabric-purview-functions-pipeline.yml`](../.
 
 | Stage | Trigger | Purpose |
 |-------|---------|---------|
-| **Validate** | PR + main | Ruff format check (`classify_assets/`, `sync_classification/`, `function_app.py`) + pytest unit tests |
+| **Validate** | PR + main | Ruff format check (`classify_assets/`, `sync_classification/`, `shared_utils/`, `function_app.py`) + pytest unit tests |
 | **Package** | PR + main | Install prod deps into `.python_packages/lib/site-packages`, zip the function |
 | **Deploy** | main only | `az functionapp deployment source config-zip` to `func-fabricsens-rh` (Flex Consumption) |
 | **Verify** | main only | `az functionapp function list` to confirm both `classify_assets` and `sync_classification` are indexed |
