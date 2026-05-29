@@ -22,7 +22,10 @@ trigger:
       - feature/*
   paths:
     include:
-      - fabric-delta-table-sensitivity-purview-int/src/function/**
+      - fabric-delta-table-sensitivity-purview-int/**
+    exclude:
+     - fabric-delta-table-sensitivity-purview-int/docs/**
+     - fabric-delta-table-sensitivity-purview-int/**/*.md
 
 pr: none
 
@@ -48,7 +51,7 @@ parameters:
     default: true
 
   - name: deployFunction
-    displayName: Deploy Function (main only)
+    displayName: Deploy Function (main + feature/*)
     type: boolean
     default: true
 
