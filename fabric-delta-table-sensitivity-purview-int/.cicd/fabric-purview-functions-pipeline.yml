@@ -123,9 +123,7 @@ stages:
                   testResultsFiles: $(Build.ArtifactStagingDirectory)/test-results.xml
                   testRunTitle: 'function unit tests (classify_assets + sync_classification)'
 
-  # =========================================================================
-  # STAGE 2: Package (build deployment zip)
-  # =========================================================================
+
   - stage: Package
     displayName: 'Package function'
     dependsOn: Validate
@@ -181,9 +179,6 @@ stages:
             artifact: function-package
             displayName: 'Publish function-package artifact'
 
-  # =========================================================================
-  # STAGE 3: Deploy (main branch only)
-  # =========================================================================
   - stage: Deploy
     displayName: 'Deploy to Azure'
     dependsOn: Package
@@ -224,9 +219,7 @@ stages:
                         --src "$ZIP_PATH" \
                         --build-remote false
 
-  # =========================================================================
-  # STAGE 4: Verify (post-deploy smoke check)
-  # =========================================================================
+
   - stage: Verify
     displayName: 'Verify deployment'
     dependsOn: Deploy
