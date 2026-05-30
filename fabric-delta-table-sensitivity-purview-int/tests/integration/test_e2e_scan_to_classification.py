@@ -113,12 +113,15 @@ def _verify_fixture_table(
 def _trigger_scan(
     credential, scan_root: str, data_source: str, scan_name: str, run_id: str
 ) -> None:
+    # `scan_root` from `az purview account show` already ends in `/scan` for
+    # Unified Purview accounts (e.g. https://{tenant}-api.purview-service.microsoft.com/scan).
+    # Path here is `/datasources/...` -- do NOT prepend another `/scan/`.
     url = (
-        f"{scan_root}/scan/datasources/{data_source}/scans/{scan_name}:run"
-        f"?runId={run_id}&api-version=2023-09-01"
+        f"{scan_root}/datasources/{data_source}/scans/{scan_name}/runs/{run_id}"
+        f"?api-version=2023-09-01"
     )
-    logger.info("POST %s", url)
-    r = requests.post(url, headers=_atlas_headers(credential), timeout=60)
+    logger.info("PUT %s", url)
+    r = requests.put(url, headers=_atlas_headers(credential), timeout=60)
     if r.status_code == 403:
         pytest.fail(
             f"403 from {url}: the test identity needs *Data Source Administrator* "
@@ -127,7 +130,7 @@ def _trigger_scan(
             f"Role assignments. Response body: {r.text[:500]}"
         )
     if r.status_code not in (200, 202):
-        pytest.fail(f"Failed to trigger scan ({r.status_code}): {r.text[:1000]}")
+        pytest.fail(f"Failed to trigger scan ({r.status_code}) at {url}: {r.text[:1000]}")
 
 
 def _wait_for_scan(
@@ -141,7 +144,7 @@ def _wait_for_scan(
 ) -> str:
     """Poll until status is terminal. Returns final status string."""
     url = (
-        f"{scan_root}/scan/datasources/{data_source}/scans/{scan_name}/runs/{run_id}"
+        f"{scan_root}/datasources/{data_source}/scans/{scan_name}/runs/{run_id}"
         f"?api-version=2023-09-01"
     )
     deadline = time.time() + timeout_s
