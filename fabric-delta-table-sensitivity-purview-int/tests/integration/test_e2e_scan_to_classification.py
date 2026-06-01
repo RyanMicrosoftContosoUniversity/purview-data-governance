@@ -123,7 +123,7 @@ def _trigger_scan(
         f"?api-version=2023-09-01"
     )
     logger.info("POST %s", url)
-    r = requests.post(url, headers=_atlas_headers(credential), timeout=60)
+    r = requests.post(url, headers=_atlas_headers(credential), json={}, timeout=60)
     if r.status_code == 403:
         pytest.fail(
             f"403 from {url}: the test identity needs *Data Source Administrator* "
