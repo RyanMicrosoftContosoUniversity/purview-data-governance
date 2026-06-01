@@ -111,13 +111,15 @@ def _verify_fixture_table(
 
 
 def _trigger_scan(
-    credential, scan_root: str, data_source: str, scan_name: str, run_id: str
-) -> None:
+    credential, scan_root: str, data_source: str, scan_name: str
+) -> str:
+    """Trigger a scan run. Returns the runId assigned by Purview."""
     # `scan_root` from `az purview account show` already ends in `/scan` for
     # Unified Purview accounts (e.g. https://{tenant}-api.purview-service.microsoft.com/scan).
-    # Path here is `/datasources/...` -- do NOT prepend another `/scan/`.
+    # The Run Scan operation is POST /datasources/{ds}/scans/{name}/run (no runId
+    # in path); Purview generates the runId and returns it in the response body.
     url = (
-        f"{scan_root}/datasources/{data_source}/scans/{scan_name}/runs/{run_id}"
+        f"{scan_root}/datasources/{data_source}/scans/{scan_name}/run"
         f"?api-version=2023-09-01"
     )
     logger.info("POST %s", url)
@@ -131,6 +133,15 @@ def _trigger_scan(
         )
     if r.status_code not in (200, 202):
         pytest.fail(f"Failed to trigger scan ({r.status_code}) at {url}: {r.text[:1000]}")
+    try:
+        body = r.json()
+    except ValueError:
+        pytest.fail(f"Scan trigger returned non-JSON body: {r.text[:1000]}")
+    run_id = body.get("scanResultId") or body.get("runId") or body.get("id")
+    if not run_id:
+        pytest.fail(f"Scan trigger response did not contain a runId: {body}")
+    logger.info("Scan run started: runId=%s", run_id)
+    return run_id
 
 
 def _wait_for_scan(
@@ -265,14 +276,12 @@ def test_e2e_scan_classifies_fixture_table(
                 )
 
     # ---- 3. Trigger scan ----
-    run_id = cfg["scan_run_id"]
-    logger.info("Triggering scan run %s on %s/%s", run_id, cfg["data_source_name"], cfg["scan_name"])
-    _trigger_scan(
+    logger.info("Triggering scan on %s/%s", cfg["data_source_name"], cfg["scan_name"])
+    run_id = _trigger_scan(
         az_credential,
         purview_endpoints["scan_root"],
         cfg["data_source_name"],
         cfg["scan_name"],
-        run_id,
     )
 
     # ---- 4. Wait for scan to complete ----
