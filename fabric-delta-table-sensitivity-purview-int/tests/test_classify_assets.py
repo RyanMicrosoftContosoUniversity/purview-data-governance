@@ -73,33 +73,33 @@ def test_list_lakehouse_tables_propagates_http_error(workspace_id):
 def test_read_sensitivity_returns_property():
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {"data-sensitivity": "Confidential"}
-    with patch("classify_assets.handler.DeltaTable", return_value=fake_dt):
+    with patch("shared_utils.classify_assets_helpers.DeltaTable", return_value=fake_dt):
         assert _read_sensitivity("appointments") == "Confidential"
 
 
 def test_read_sensitivity_underscore_fallback():
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {"data_sensitivity": "Public"}
-    with patch("classify_assets.handler.DeltaTable", return_value=fake_dt):
+    with patch("shared_utils.classify_assets_helpers.DeltaTable", return_value=fake_dt):
         assert _read_sensitivity("t") == "Public"
 
 
 def test_read_sensitivity_missing_returns_none():
     fake_dt = MagicMock()
     fake_dt.metadata.return_value.configuration = {}
-    with patch("classify_assets.handler.DeltaTable", return_value=fake_dt):
+    with patch("shared_utils.classify_assets_helpers.DeltaTable", return_value=fake_dt):
         assert _read_sensitivity("t") is None
 
 
 def test_read_sensitivity_table_not_found_returns_none():
     from deltalake.exceptions import TableNotFoundError
 
-    with patch("classify_assets.handler.DeltaTable", side_effect=TableNotFoundError("nope")):
+    with patch("shared_utils.classify_assets_helpers.DeltaTable", side_effect=TableNotFoundError("nope")):
         assert _read_sensitivity("missing") is None
 
 
 def test_read_sensitivity_swallows_unexpected_exception():
-    with patch("classify_assets.handler.DeltaTable", side_effect=RuntimeError("boom")):
+    with patch("shared_utils.classify_assets_helpers.DeltaTable", side_effect=RuntimeError("boom")):
         assert _read_sensitivity("t") is None
 
 
@@ -217,11 +217,11 @@ def test_classify_raises_on_500(purview_url):
 
 
 def test_process_tables_classifies_when_sensitivity_present(monkeypatch):
-    monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: "Public")
-    monkeypatch.setattr("classify_assets.handler._find_entity_guid", lambda t: "guid-" + t)
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._read_sensitivity", lambda t: "Public")
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._find_entity_guid", lambda t: "guid-" + t)
     classify_calls = []
     monkeypatch.setattr(
-        "classify_assets.handler._classify",
+        "shared_utils.classify_assets_helpers._classify",
         lambda guid, name: classify_calls.append((guid, name)),
     )
     summary = _process_tables(["appointments", "claims"])
@@ -239,13 +239,13 @@ def test_process_tables_classifies_when_sensitivity_present(monkeypatch):
 
 
 def test_process_tables_skips_no_property(monkeypatch):
-    monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: None)
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._read_sensitivity", lambda t: None)
     monkeypatch.setattr(
-        "classify_assets.handler._find_entity_guid",
+        "shared_utils.classify_assets_helpers._find_entity_guid",
         lambda t: pytest.fail("should not look up entity when no property"),
     )
     monkeypatch.setattr(
-        "classify_assets.handler._classify",
+        "shared_utils.classify_assets_helpers._classify",
         lambda *_: pytest.fail("should not classify"),
     )
     summary = _process_tables(["t1"])
@@ -254,9 +254,9 @@ def test_process_tables_skips_no_property(monkeypatch):
 
 
 def test_process_tables_skips_unknown_sensitivity_value(monkeypatch):
-    monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: "TopSecret")
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._read_sensitivity", lambda t: "TopSecret")
     monkeypatch.setattr(
-        "classify_assets.handler._classify",
+        "shared_utils.classify_assets_helpers._classify",
         lambda *_: pytest.fail("should not classify"),
     )
     summary = _process_tables(["t1"])
@@ -265,13 +265,13 @@ def test_process_tables_skips_unknown_sensitivity_value(monkeypatch):
 
 @responses.activate
 def test_process_tables_skips_none_sensitivity_without_purview_call(monkeypatch, caplog):
-    monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: "None")
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._read_sensitivity", lambda t: "None")
     monkeypatch.setattr(
-        "classify_assets.handler._find_entity_guid",
+        "shared_utils.classify_assets_helpers._find_entity_guid",
         lambda t: pytest.fail("should not look up entity when sensitivity is None"),
     )
     monkeypatch.setattr(
-        "classify_assets.handler._classify",
+        "shared_utils.classify_assets_helpers._classify",
         lambda *_: pytest.fail("should not classify sensitivity None"),
     )
 
@@ -285,10 +285,10 @@ def test_process_tables_skips_none_sensitivity_without_purview_call(monkeypatch,
 
 
 def test_process_tables_skips_when_entity_not_found(monkeypatch):
-    monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: "Confidential")
-    monkeypatch.setattr("classify_assets.handler._find_entity_guid", lambda t: None)
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._read_sensitivity", lambda t: "Confidential")
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._find_entity_guid", lambda t: None)
     monkeypatch.setattr(
-        "classify_assets.handler._classify",
+        "shared_utils.classify_assets_helpers._classify",
         lambda *_: pytest.fail("should not classify"),
     )
     summary = _process_tables(["t1"])
@@ -296,13 +296,13 @@ def test_process_tables_skips_when_entity_not_found(monkeypatch):
 
 
 def test_process_tables_counts_errors_and_continues(monkeypatch):
-    monkeypatch.setattr("classify_assets.handler._read_sensitivity", lambda t: "Public")
-    monkeypatch.setattr("classify_assets.handler._find_entity_guid", lambda t: "g")
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._read_sensitivity", lambda t: "Public")
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._find_entity_guid", lambda t: "g")
 
     def boom(_g, _n):
         raise RuntimeError("purview down")
 
-    monkeypatch.setattr("classify_assets.handler._classify", boom)
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._classify", boom)
     summary = _process_tables(["t1", "t2"])
     assert summary == {
         "total": 2,
@@ -315,11 +315,11 @@ def test_process_tables_counts_errors_and_continues(monkeypatch):
 
 def test_process_tables_sensitivity_lookup_is_case_insensitive(monkeypatch):
     monkeypatch.setattr(
-        "classify_assets.handler._read_sensitivity", lambda t: "  HIGHLY CONFIDENTIAL  "
+        "shared_utils.classify_assets_helpers._read_sensitivity", lambda t: "  HIGHLY CONFIDENTIAL  "
     )
-    monkeypatch.setattr("classify_assets.handler._find_entity_guid", lambda t: "g")
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._find_entity_guid", lambda t: "g")
     captured = []
-    monkeypatch.setattr("classify_assets.handler._classify", lambda g, n: captured.append(n))
+    monkeypatch.setattr("shared_utils.classify_assets_helpers._classify", lambda g, n: captured.append(n))
     _process_tables(["t1"])
     assert captured == ["Sensitivity.HighlyConfidential"]
 

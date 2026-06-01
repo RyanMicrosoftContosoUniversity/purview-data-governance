@@ -1,11 +1,17 @@
+# =============================================================================
+# Function App, Storage, App Insights, Service Plan, deployment package
+# =============================================================================
+# Resources for the Flex Consumption Python Function App that hosts the
+# classify_assets + sync_classification triggers.
+#
+# This file is intentionally scoped to "the function host + its deploy unit".
+# Event-Hub resources live in eventhubs.tf; role assignments (data-plane RBAC
+# for the function MI) live in rbac.tf; Purview resources live in purview.tf.
+
 data "azurerm_client_config" "current" {}
 
-# Existing Purview account ARM ID (constructed; account is not managed here)
-locals {
-  purview_account_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.phase2_resource_group}/providers/Microsoft.Purview/accounts/${var.purview_account_name}"
-}
+# --- Storage for the deployment package + host runtime state ----------------
 
-# Storage account for the Function (deployment package + runtime state)
 resource "azurerm_storage_account" "func" {
   name                          = var.function_storage_account_name
   resource_group_name           = var.phase2_resource_group
@@ -28,7 +34,8 @@ resource "azurerm_storage_container" "deployments" {
   container_access_type = "private"
 }
 
-# App Insights for Function telemetry
+# --- App Insights / Log Analytics for Function telemetry --------------------
+
 resource "azurerm_log_analytics_workspace" "func" {
   name                = "law-${var.function_app_name}"
   location            = var.phase2_location
@@ -45,7 +52,8 @@ resource "azurerm_application_insights" "func" {
   application_type    = "web"
 }
 
-# Flex Consumption plan
+# --- Flex Consumption plan --------------------------------------------------
+
 resource "azurerm_service_plan" "func" {
   name                = "asp-${var.function_app_name}"
   location            = var.phase2_location
@@ -54,12 +62,13 @@ resource "azurerm_service_plan" "func" {
   sku_name            = "FC1"
 }
 
-# Package the Function code (with vendored deps from .python_packages)
+# --- Package the Function code (with vendored deps from .python_packages) ---
+
 data "archive_file" "function_zip" {
   type        = "zip"
   source_dir  = "${path.module}/../src/function"
   output_path = "${path.module}/function.zip"
-  excludes    = ["__pycache__", "local.settings.json", "tests", "requirements-dev.txt", ".pytest_cache", ".ruff_cache"]
+  excludes    = ["__pycache__", "local.settings.json", "requirements-dev.txt", ".pytest_cache", ".ruff_cache"]
 }
 
 resource "azurerm_storage_blob" "function_zip" {
@@ -71,7 +80,8 @@ resource "azurerm_storage_blob" "function_zip" {
   content_md5            = data.archive_file.function_zip.output_md5
 }
 
-# Flex Consumption Function App (Python 3.11)
+# --- Flex Consumption Function App (Python 3.11) ----------------------------
+
 resource "azurerm_function_app_flex_consumption" "func" {
   name                = var.function_app_name
   location            = var.phase2_location
@@ -149,28 +159,8 @@ resource "azurerm_function_app_flex_consumption" "func" {
   }
 }
 
-# Function MI needs Storage Blob Data Owner on its own deployment storage
-# (Flex Consumption uses MI to fetch the package).
-resource "azurerm_role_assignment" "func_storage" {
-  scope                = azurerm_storage_account.func.id
-  role_definition_name = "Storage Blob Data Owner"
-  principal_id         = azurerm_function_app_flex_consumption.func.identity[0].principal_id
-}
-
-# AzureWebJobsStorage with MI needs Queue + Table data plane access too
-# (host stores leases, secrets cache, scale metrics in queues/tables).
-resource "azurerm_role_assignment" "func_storage_queue" {
-  scope                = azurerm_storage_account.func.id
-  role_definition_name = "Storage Queue Data Contributor"
-  principal_id         = azurerm_function_app_flex_consumption.func.identity[0].principal_id
-}
-
-resource "azurerm_role_assignment" "func_storage_table" {
-  scope                = azurerm_storage_account.func.id
-  role_definition_name = "Storage Table Data Contributor"
-  principal_id         = azurerm_function_app_flex_consumption.func.identity[0].principal_id
-}
-
+# --- Deploy the zip into the Function App (Flex Consumption) ----------------
+#
 # Flex Consumption requires an actual deploy call to load code into wwwroot;
 # the storage_container_* config on the app only points at the deployment
 # location, it doesn't push the package. The azurerm provider doesn't have a
@@ -215,130 +205,5 @@ resource "null_resource" "function_deploy" {
     azurerm_role_assignment.func_storage_queue,
     azurerm_role_assignment.func_storage_table,
     azurerm_storage_blob.function_zip,
-  ]
-}
-
-# Function MI needs to read OneLake Files (Delta logs).
-# Granted via Fabric workspace role assignment (Viewer is enough for Files reads).
-# fabric_workspace_role_assignment is part of the microsoft/fabric provider.
-resource "fabric_workspace_role_assignment" "func_workspace_viewer" {
-  workspace_id = var.workspace_id
-  principal = {
-    id   = azurerm_function_app_flex_consumption.func.identity[0].principal_id
-    type = "ServicePrincipal"
-  }
-  role = "Contributor"
-}
-
-# --- Event Hub: trigger function on Purview scan status events --------------
-#
-# Purview Unified accounts (post-rebrand) no longer publish to Azure Event
-# Grid system topics — `Microsoft.Purview.Accounts` is no longer a registered
-# topic type. The supported path is:
-#   Purview diagnostic settings -> Event Hub -> Function (eventHubTrigger)
-#
-# Diagnostic category `ScanStatusLogEvent` carries the same payload the legacy
-# system topic used to emit. We filter to successful scans inside the function
-# (the diag pipeline doesn't support payload-based filters).
-
-resource "azurerm_eventhub_namespace" "purview_events" {
-  name                = "ehns-fabricsens-rh"
-  location            = var.phase2_location
-  resource_group_name = var.phase2_resource_group
-  sku                 = "Standard"
-  capacity            = 1
-}
-
-resource "azurerm_eventhub" "scan_status" {
-  name              = "purview-scan-status"
-  namespace_id      = azurerm_eventhub_namespace.purview_events.id
-  partition_count   = 2
-  message_retention = 1
-}
-
-# Diagnostic settings authenticate to Event Hub via an authorization rule on
-# the namespace (not via MI yet — diag settings -> EH still requires SAS).
-resource "azurerm_eventhub_namespace_authorization_rule" "diag_send" {
-  name                = "diag-send"
-  namespace_name      = azurerm_eventhub_namespace.purview_events.name
-  resource_group_name = var.phase2_resource_group
-  listen              = false
-  send                = true
-  manage              = false
-}
-
-# Wire Purview's `ScanStatusLogEvent` category to the Event Hub.
-resource "azurerm_monitor_diagnostic_setting" "purview_to_eh" {
-  name                           = "scan-status-to-eh"
-  target_resource_id             = local.purview_account_id
-  eventhub_authorization_rule_id = azurerm_eventhub_namespace_authorization_rule.diag_send.id
-  eventhub_name                  = azurerm_eventhub.scan_status.name
-
-  enabled_log {
-    category = "ScanStatusLogEvent"
-  }
-}
-
-# Function MI needs Receive on the Event Hub for the eventHubTrigger to use
-# identity-based binding (no SAS in app settings).
-resource "azurerm_role_assignment" "func_eh_receiver" {
-  scope                = azurerm_eventhub_namespace.purview_events.id
-  role_definition_name = "Azure Event Hubs Data Receiver"
-  principal_id         = azurerm_function_app_flex_consumption.func.identity[0].principal_id
-}
-
-# NOTE: Data Curator on the Purview collection must be granted manually via
-# the Purview UI for the Function MI (`func-fabricsens-rh`):
-#   Purview portal -> Data Map -> Collections -> {collection containing the
-#   Fabric source} -> Role assignments -> Data curators -> Add -> select the
-#   Function App's managed identity.
-#
-# The metadata-roles REST API was attempted via restapi_object but the path
-# /policystore/metadataRoles/{id}/members 404s in this account (collection id
-# format / API surface inconsistent across Purview versions). Manual grant is
-# the supported path for now.
-
-# --- Purview Atlas notification Event Hub (BYO) -----------------------------
-# Purview's kafkaConfigurations resource isn't modeled in azurerm, so use
-# azapi for the Purview account lookup and the notification configuration.
-data "azapi_resource" "purview_account" {
-  type      = "Microsoft.Purview/accounts@2021-12-01"
-  name      = var.purview_account_name
-  parent_id = "/subscriptions/${var.subscription_id}/resourceGroups/${var.phase2_resource_group}"
-}
-
-resource "azurerm_eventhub" "atlas_notifications" {
-  name              = var.atlas_notification_eventhub_name
-  namespace_id      = azurerm_eventhub_namespace.purview_events.id
-  partition_count   = 4
-  message_retention = 1
-}
-
-resource "azurerm_role_assignment" "purview_eh_contributor" {
-  scope                = azurerm_eventhub_namespace.purview_events.id
-  role_definition_name = "Contributor"
-  principal_id         = data.azapi_resource.purview_account.identity[0].principal_id
-}
-
-resource "azapi_resource" "purview_atlas_notification_config" {
-  type      = "Microsoft.Purview/accounts/kafkaConfigurations@2021-12-01"
-  name      = "atlas-notification-config"
-  parent_id = local.purview_account_id
-
-  body = {
-    properties = {
-      eventHubResourceId  = azurerm_eventhub.atlas_notifications.id
-      eventHubType        = "Notification"
-      eventStreamingState = "Enabled"
-      eventStreamingType  = "Azure"
-      consumerGroup       = "$Default"
-      credentials = {
-        type = "SystemAssigned"
-      }
-    }
-  }
-
-  depends_on = [
-    azurerm_role_assignment.purview_eh_contributor,
   ]
 }

@@ -3,11 +3,13 @@
 # Purview Classification Function (fabric-delta-table-sensitivity-purview-int)
 #
 # Stages:
-#   1. Validate — Lint (ruff), unit tests (pytest)
-#   2. Package  — Install prod deps to .python_packages, zip the function
-#   3. Deploy   — Zip-deploy to existing Flex Consumption Function App
-#                 (main branch only)
-#   4. Verify   — Confirm function is indexed and listener healthy
+#   1. Validate    — Lint (ruff), unit tests (pytest)
+#   2. ValidateIaC — terraform fmt -check + terraform validate (runs in parallel
+#                    with Validate; gates Package along with Validate)
+#   3. Package     — Install prod deps to .python_packages, zip the function
+#   4. Deploy      — Zip-deploy to existing Flex Consumption Function App
+#                    (main branch only)
+#   5. Verify      — Confirm function is indexed and listener healthy
 #
 # Triggers only on changes under src/function/**.
 # Assumes infra (Function App, Storage, App Insights, role assignments) is
@@ -19,17 +21,15 @@ trigger:
   branches:
     include:
       - main
+      - feature/*
   paths:
     include:
-      - fabric-delta-table-sensitivity-purview-int/src/function/**
+      - fabric-delta-table-sensitivity-purview-int/**
+    exclude:
+     - fabric-delta-table-sensitivity-purview-int/docs/**
+     - fabric-delta-table-sensitivity-purview-int/**/*.md
 
-pr:
-  branches:
-    include:
-      - main
-  paths:
-    include:
-      - fabric-delta-table-sensitivity-purview-int/src/function/**
+pr: none
 
 # ---------------------------------------------------------------------------
 # Parameters — selectable at queue time
@@ -52,8 +52,18 @@ parameters:
     type: boolean
     default: true
 
+  - name: runIaCValidation
+    displayName: Run Terraform fmt + validate
+    type: boolean
+    default: true
+
+  - name: runIntegrationTests
+    displayName: 'Run E2E integration tests (Purview scan → Function → classification, ~5-10 min)'
+    type: boolean
+    default: false
+
   - name: deployFunction
-    displayName: Deploy Function (main only)
+    displayName: Deploy Function (main + feature/*)
     type: boolean
     default: true
 
@@ -61,9 +71,18 @@ parameters:
 variables:
   - group: purview-data-governance-${{ parameters.environment }}
   # Expected variables in the group:
-  #   AZURE_SUBSCRIPTION_ID   - SUB ID
-  #   RESOURCE_GROUP_NAME     - RG
-  #   FUNCTION_APP_NAME       - FUNC APP NAME
+  #   AZURE_SUBSCRIPTION_ID   - subscription hosting Purview + Function App
+  #   RESOURCE_GROUP_NAME     - resource group for the Function App
+  #   FUNCTION_APP_NAME       - Function App name
+  # Variables consumed ONLY by the IntegrationTestE2E stage (safe to omit if
+  # `runIntegrationTests=false`):
+  #   PURVIEW_ACCOUNT         - e.g. governancePurviewRH
+  #   PURVIEW_RESOURCE_GROUP  - e.g. governance-rg
+  #   PURVIEW_DATA_SOURCE_NAME- e.g. Fabric
+  #   PURVIEW_SCAN_NAME       - e.g. integration-test-scan
+  #   PURVIEW_COLLECTION_ID   - e.g. bhhlid
+  #   SOURCE_WORKSPACE_ID     - Fabric workspace ID under scan
+  #   SOURCE_LAKEHOUSE_NAME   - lakehouse where the fixture table lives
 
   - name: serviceConnection
     value: sc-purview-data-governance-${{ parameters.environment }}
@@ -73,6 +92,12 @@ variables:
 
   - name: functionRoot
     value: fabric-delta-table-sensitivity-purview-int/src/function
+
+  - name: iacRoot
+    value: fabric-delta-table-sensitivity-purview-int/iac
+
+  - name: terraformVersion
+    value: '1.13.4'
 
   - name: vmImage
     value: ubuntu-latest
@@ -104,7 +129,7 @@ stages:
           - ${{ if eq(parameters.runLint, true) }}:
               - script: |
                   set -euo pipefail
-                  ruff format --check classify_assets/ sync_classification/ function_app.py
+                  ruff format --check classify_assets/ sync_classification/ shared_utils/ function_app.py
                 displayName: 'Ruff format check'
                 workingDirectory: $(functionRoot)
 
@@ -113,7 +138,7 @@ stages:
                   set -euo pipefail
                   python -m pytest tests/ -x --tb=short --junitxml=$(Build.ArtifactStagingDirectory)/test-results.xml
                 displayName: 'Run pytest'
-                workingDirectory: $(functionRoot)
+                workingDirectory: fabric-delta-table-sensitivity-purview-int
 
               - task: PublishTestResults@2
                 displayName: 'Publish test results'
@@ -124,10 +149,73 @@ stages:
                   testRunTitle: 'function unit tests (classify_assets + sync_classification)'
 
 
+  # ---------------------------------------------------------------------------
+  # IaC validation — terraform fmt + validate
+  #
+  # Runs in parallel with Validate. Catches drift in iac/ (formatting,
+  # missing variables, broken references, provider-block errors) BEFORE the
+  # function code is packaged and deployed. Skips `terraform plan` because
+  # plan requires Azure credentials and a usable backend; that needs a more
+  # heavyweight pipeline + service connection and is deferred to a separate
+  # infra-only pipeline if/when needed.
+  # ---------------------------------------------------------------------------
+  - stage: ValidateIaC
+    displayName: 'Validate IaC (terraform fmt + validate)'
+    dependsOn: []
+    condition: eq('${{ parameters.runIaCValidation }}', true)
+    pool:
+      vmImage: $(vmImage)
+    jobs:
+      - job: ValidateIaCJob
+        displayName: 'terraform fmt + validate'
+        steps:
+          - script: |
+              set -euo pipefail
+              # Self-contained Terraform install via HashiCorp's apt repo
+              # (avoids the Marketplace TerraformInstaller@1 task, which
+              # requires the ms-devlabs extension to be installed in the ADO org).
+              sudo apt-get update -y
+              sudo apt-get install -y gnupg software-properties-common curl
+              curl -fsSL https://apt.releases.hashicorp.com/gpg \
+                | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+              echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" \
+                | sudo tee /etc/apt/sources.list.d/hashicorp.list
+              sudo apt-get update -y
+              # Pin to the exact version declared in $(terraformVersion).
+              sudo apt-get install -y "terraform=$(terraformVersion)-*"
+              terraform version
+            displayName: 'Install Terraform $(terraformVersion)'
+
+          - script: |
+              set -euo pipefail
+              terraform fmt -check -recursive -diff
+            displayName: 'terraform fmt -check'
+            workingDirectory: $(iacRoot)
+
+          - script: |
+              set -euo pipefail
+              # -backend=false skips backend init (no Azure creds needed here).
+              terraform init -backend=false -input=false
+            displayName: 'terraform init (no backend)'
+            workingDirectory: $(iacRoot)
+
+          - script: |
+              set -euo pipefail
+              terraform validate
+            displayName: 'terraform validate'
+            workingDirectory: $(iacRoot)
+
+
   - stage: Package
     displayName: 'Package function'
-    dependsOn: Validate
-    condition: succeeded()
+    dependsOn:
+      - Validate
+      - ValidateIaC
+    condition: |
+      and(
+        in(dependencies.Validate.result, 'Succeeded'),
+        in(dependencies.ValidateIaC.result, 'Succeeded', 'Skipped')
+      )
     pool:
       vmImage: $(vmImage)
     jobs:
@@ -159,7 +247,7 @@ stages:
               archiveType: zip
               archiveFile: $(Build.ArtifactStagingDirectory)/function.zip
               replaceExistingArchive: true
-              # Mirror exclusions from iac/phase2_function.tf archive_file.
+              # Mirror exclusions from iac/function_app.tf archive_file.
               # ArchiveFiles@2 doesn't support glob excludes natively; we rely
               # on the fact that __pycache__/.pytest_cache/.ruff_cache aren't
               # generated on a clean agent. Tests folder is intentionally
@@ -168,8 +256,12 @@ stages:
           - script: |
               set -euo pipefail
               # Sanity check: confirm function_app.py is at the zip root.
-              unzip -l $(Build.ArtifactStagingDirectory)/function.zip | head -40
-              if ! unzip -l $(Build.ArtifactStagingDirectory)/function.zip | grep -q '^.* function_app\.py$'; then
+              # Capture listing to a file first to avoid SIGPIPE (141) from
+              # `unzip -l | head` under `set -o pipefail`.
+              ziplist="$(mktemp)"
+              unzip -l "$(Build.ArtifactStagingDirectory)/function.zip" > "$ziplist"
+              head -40 "$ziplist"
+              if ! grep -q '^.* function_app\.py$' "$ziplist"; then
                 echo "##[error]function_app.py not found at zip root"
                 exit 1
               fi
@@ -185,7 +277,10 @@ stages:
     condition: |
       and(
         succeeded(),
-        eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+        or(
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+          startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/')
+        ),
         eq('${{ parameters.deployFunction }}', true)
       )
     pool:
@@ -257,3 +352,84 @@ stages:
                   exit 1
                 fi
                 echo "##[section]classify_assets and sync_classification are indexed and ready."
+
+
+
+  - stage: IntegrationTestE2E
+    displayName: 'Integration test (E2E: Purview scan -> Function -> classification)'
+    dependsOn: Verify
+    condition: |
+      and(
+        succeeded(),
+        eq('${{ parameters.runIntegrationTests }}', true)
+      )
+    pool:
+      vmImage: $(vmImage)
+    jobs:
+      - job: IntegrationE2E
+        displayName: 'Trigger scan, wait, assert classification'
+        timeoutInMinutes: 30
+        steps:
+          - task: UsePythonVersion@0
+            displayName: 'Use Python $(pythonVersion)'
+            inputs:
+              versionSpec: $(pythonVersion)
+              addToPath: true
+
+          - script: |
+              set -euo pipefail
+              python -m pip install --upgrade pip
+              pip install -r src/function/requirements-dev.txt
+            displayName: 'Install test dependencies'
+            workingDirectory: fabric-delta-table-sensitivity-purview-int
+
+          - task: AzureCLI@2
+            displayName: 'Run integration tests (pytest tests/integration/)'
+            inputs:
+              azureSubscription: $(serviceConnection)
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -euo pipefail
+                cd fabric-delta-table-sensitivity-purview-int
+
+                # Fail fast if the variable group is missing the integration
+                # test variables (otherwise bash treats $(VAR) as command
+                # substitution and emits a confusing "command not found").
+                MISSING=()
+                for v in PURVIEW_ACCOUNT PURVIEW_RESOURCE_GROUP \
+                         PURVIEW_DATA_SOURCE_NAME PURVIEW_SCAN_NAME \
+                         PURVIEW_COLLECTION_ID SOURCE_WORKSPACE_ID \
+                         SOURCE_LAKEHOUSE_ID SOURCE_LAKEHOUSE_NAME; do
+                  # Indirect expansion: ${!v} is the value of the var named $v.
+                  if [ -z "${!v:-}" ]; then MISSING+=("$v"); fi
+                done
+                if [ ${#MISSING[@]} -gt 0 ]; then
+                  echo "##[error]Variable group 'purview-data-governance-dev' is missing required variables: ${MISSING[*]}"
+                  echo "##[error]Add them in ADO -> Pipelines -> Library. See docs/CICD.md."
+                  exit 1
+                fi
+
+                # Gate the parent conftest's credential-mock + signal the
+                # integration suite to actually collect.
+                export RUN_INTEGRATION_TESTS=1
+                python -m pytest tests/integration/ -v -s --tb=short \
+                  --junitxml=$(Build.ArtifactStagingDirectory)/integration-results.xml
+            env:
+              AZURE_SUBSCRIPTION_ID: $(AZURE_SUBSCRIPTION_ID)
+              PURVIEW_ACCOUNT: $(PURVIEW_ACCOUNT)
+              PURVIEW_RESOURCE_GROUP: $(PURVIEW_RESOURCE_GROUP)
+              PURVIEW_DATA_SOURCE_NAME: $(PURVIEW_DATA_SOURCE_NAME)
+              PURVIEW_SCAN_NAME: $(PURVIEW_SCAN_NAME)
+              PURVIEW_COLLECTION_ID: $(PURVIEW_COLLECTION_ID)
+              SOURCE_WORKSPACE_ID: $(SOURCE_WORKSPACE_ID)
+              SOURCE_LAKEHOUSE_ID: $(SOURCE_LAKEHOUSE_ID)
+              SOURCE_LAKEHOUSE_NAME: $(SOURCE_LAKEHOUSE_NAME)
+
+          - task: PublishTestResults@2
+            displayName: 'Publish integration test results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: $(Build.ArtifactStagingDirectory)/integration-results.xml
+              testRunTitle: 'E2E integration tests (Purview scan -> Function -> classification)'

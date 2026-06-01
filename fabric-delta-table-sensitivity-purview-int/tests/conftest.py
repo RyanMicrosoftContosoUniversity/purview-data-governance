@@ -19,29 +19,39 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Make the parent (function/) importable as a package root so tests can do
-# `from classify_assets.handler import ...` regardless of cwd.
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+# Make src/function/ importable as a package root so tests can do
+# `from classify_assets.handler import ...` regardless of cwd. Tests live at
+# <repo>/fabric-delta-table-sensitivity-purview-int/tests/ and the function
+# code lives at <repo>/fabric-delta-table-sensitivity-purview-int/src/function/.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src" / "function"))
 
-# 1. Env vars consumed at import time by classify_assets/handler.py
-os.environ.setdefault("SOURCE_WORKSPACE_ID", "00000000-0000-0000-0000-00000000ws01")
-os.environ.setdefault("SOURCE_LAKEHOUSE_ID", "00000000-0000-0000-0000-00000000lh01")
-os.environ.setdefault("SOURCE_LAKEHOUSE_NAME", "sensitivity_metadata_lh")
-os.environ.setdefault("PURVIEW_ACCOUNT", "test-purview")
-os.environ.setdefault("CLASSIFICATION_NAMESPACE", "Sensitivity")
-os.environ.setdefault(
-    "SENSITIVITY_LEVEL_MAP_JSON",
-    json.dumps(
+# Are we running E2E integration tests? They need REAL Azure credentials
+# and REAL environment values (PURVIEW_ACCOUNT, SOURCE_WORKSPACE_ID, etc.)
+# from the variable group, not the test fakes below.
+_RUNNING_INTEGRATION = os.environ.get("RUN_INTEGRATION_TESTS") == "1"
+
+# 1. Env vars consumed at import time by classify_assets/handler.py.
+#    For unit tests we FORCE the fake values (overriding anything from the
+#    pipeline variable group) so unit tests stay hermetic. For integration
+#    tests we leave the real values from the env alone.
+if not _RUNNING_INTEGRATION:
+    os.environ["SOURCE_WORKSPACE_ID"] = "00000000-0000-0000-0000-00000000ws01"
+    os.environ["SOURCE_LAKEHOUSE_ID"] = "00000000-0000-0000-0000-00000000lh01"
+    os.environ["SOURCE_LAKEHOUSE_NAME"] = "sensitivity_metadata_lh"
+    os.environ["PURVIEW_ACCOUNT"] = "test-purview"
+    os.environ["CLASSIFICATION_NAMESPACE"] = "Sensitivity"
+    os.environ["SENSITIVITY_LEVEL_MAP_JSON"] = json.dumps(
         {
             "public": "Public",
             "general": "General",
             "confidential": "Confidential",
             "highly confidential": "HighlyConfidential",
         }
-    ),
-)
+    )
 
 # 2. Patch DefaultAzureCredential so module load doesn't try to authenticate.
+#    Skip the patch when running integration tests — those need real Azure
+#    credentials (e.g. AzureCLI@2 in CI, `az login` locally).
 _FAKE_TOKEN = SimpleNamespace(token="fake-token", expires_on=9999999999)
 
 
@@ -50,14 +60,18 @@ class _FakeCredential:
         return _FAKE_TOKEN
 
 
-_credential_patcher = patch(
-    "azure.identity.DefaultAzureCredential", return_value=_FakeCredential()
-)
-_credential_patcher.start()
+if not _RUNNING_INTEGRATION:
+    _credential_patcher = patch(
+        "azure.identity.DefaultAzureCredential", return_value=_FakeCredential()
+    )
+    _credential_patcher.start()
+else:
+    _credential_patcher = None
 
 
 def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
-    _credential_patcher.stop()
+    if _credential_patcher is not None:
+        _credential_patcher.stop()
 
 
 # ---- Shared fixtures --------------------------------------------------------
