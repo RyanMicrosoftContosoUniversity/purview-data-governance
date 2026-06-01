@@ -55,6 +55,14 @@ resource "azurerm_role_assignment" "purview_eh_contributor" {
   principal_id         = data.azapi_resource.purview_account.identity[0].principal_id
 }
 
+# Purview MI also needs Data Sender on the atlas-notifications hub itself —
+# kafkaConfigurations PUT validates this at create time and 409s without it.
+resource "azurerm_role_assignment" "purview_eh_data_sender" {
+  scope                = azurerm_eventhub.atlas_notifications.id
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = data.azapi_resource.purview_account.identity[0].principal_id
+}
+
 # --- Function MI -> Fabric workspace ----------------------------------------
 # Function MI needs to read OneLake Files (Delta logs).
 # Granted via Fabric workspace role assignment (Viewer is enough for Files
