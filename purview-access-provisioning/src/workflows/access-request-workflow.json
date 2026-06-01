@@ -1,0 +1,222 @@
+{
+  "$schema": "https://purview.azure.com/workflow/2023-10-01-preview/workflow.schema.json",
+  "name": "Fabric Self-Service Access Request",
+  "description": "Workflow for requesting access to Fabric workspace resources via Purview Unified Catalog. Includes ServiceNow ticketing (stubbed) and automated Fabric provisioning.",
+  "isEnabled": true,
+  "triggers": [
+    {
+      "type": "when_data_access_request_is_made",
+      "underGlossaryHierarchy": "{{COLLECTION_ID}}"
+    }
+  ],
+  "actions": [
+    {
+      "id": "notify-data-steward",
+      "type": "SendNotification",
+      "description": "Step 1 — Notify the data steward/owner that a new access request was submitted.",
+      "inputs": {
+        "to": [
+          {
+            "type": "EmailAddress",
+            "value": "{{APPROVER_EMAIL}}"
+          }
+        ],
+        "subject": "New Fabric access request from @{triggerBody().requestor.displayName}",
+        "body": "A self-service data access request has been submitted.\n\nRequestor: @{triggerBody().requestor.displayName} (@{triggerBody().requestor.mail})\nResource: @{triggerBody().resource.displayName}\nWorkspace: @{triggerBody().resource.properties.workspaceName}\nRequested Role: @{triggerBody().payload.role}\nBusiness Justification: @{triggerBody().payload.justification}\n\nPlease review the approval task in Purview."
+      },
+      "runAfter": {}
+    },
+    {
+      "id": "create-servicenow-ticket",
+      "type": "HttpConnector",
+      "description": "Step 2 — Call the ServiceNow stub Function App to create a tracking ticket. Replace {{SERVICENOW_URL}} with your deployed Function App URL.",
+      "inputs": {
+        "method": "POST",
+        "uri": "{{SERVICENOW_URL}}/api/servicenow/ticket",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "request_id": "@{triggerBody().requestId}",
+          "workflow_run_id": "@{workflowRunId()}",
+          "requestor": {
+            "display_name": "@{triggerBody().requestor.displayName}",
+            "email": "@{triggerBody().requestor.mail}",
+            "object_id": "@{triggerBody().requestor.id}"
+          },
+          "resource": {
+            "display_name": "@{triggerBody().resource.displayName}",
+            "qualified_name": "@{triggerBody().resource.qualifiedName}",
+            "workspace_name": "@{triggerBody().resource.properties.workspaceName}",
+            "workspace_id": "@{triggerBody().resource.properties.workspaceId}"
+          },
+          "role": "@{triggerBody().payload.role}",
+          "justification": "@{triggerBody().payload.justification}",
+          "submitted_at": "@{utcNow()}"
+        }
+      },
+      "runAfter": {
+        "notify-data-steward": [
+          "Succeeded"
+        ]
+      }
+    },
+    {
+      "id": "approval-task",
+      "type": "Approval",
+      "description": "Step 3 — Create an approval task for the data steward/admin. The approver sees the request details and the ServiceNow ticket reference.",
+      "inputs": {
+        "approvalType": "SingleApprover",
+        "title": "Fabric access request: @{triggerBody().requestor.displayName} → @{triggerBody().resource.displayName}",
+        "details": "Requestor: @{triggerBody().requestor.displayName} (@{triggerBody().requestor.mail})\nResource: @{triggerBody().resource.displayName}\nWorkspace: @{triggerBody().resource.properties.workspaceName}\nRequested Role: @{triggerBody().payload.role}\nJustification: @{triggerBody().payload.justification}\n\nServiceNow Ticket: @{body('create-servicenow-ticket').ticket_id}\nServiceNow URL: @{body('create-servicenow-ticket').ticket_url}",
+        "assignedTo": [
+          {
+            "type": "EmailAddress",
+            "value": "{{APPROVER_EMAIL}}"
+          }
+        ]
+      },
+      "runAfter": {
+        "create-servicenow-ticket": [
+          "Succeeded"
+        ]
+      }
+    },
+    {
+      "id": "check-approval-result",
+      "type": "Condition",
+      "description": "Step 4 — Branch on approval outcome. If approved, enqueue the provisioning request. If rejected, notify the requestor.",
+      "expression": {
+        "equals": [
+          "@{body('approval-task').outcome}",
+          "Approved"
+        ]
+      },
+      "runAfter": {
+        "approval-task": [
+          "Succeeded"
+        ]
+      },
+      "ifTrue": [
+        {
+          "id": "enqueue-provisioning-request",
+          "type": "HttpConnector",
+          "description": "POST to ServiceNow stub to update ticket status to approved. The stub's timer trigger will auto-enqueue a Storage Queue message for the Fabric provisioner.",
+          "inputs": {
+            "method": "POST",
+            "uri": "{{SERVICENOW_URL}}/api/servicenow/ticket/approve",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "request_id": "@{triggerBody().requestId}",
+              "workflow_run_id": "@{workflowRunId()}",
+              "ticket_id": "@{body('create-servicenow-ticket').ticket_id}",
+              "approved_by": "@{body('approval-task').approver.mail}",
+              "approved_at": "@{utcNow()}",
+              "requestor_object_id": "@{triggerBody().requestor.id}",
+              "workspace_id": "@{triggerBody().resource.properties.workspaceId}",
+              "role": "@{triggerBody().payload.role}"
+            }
+          },
+          "runAfter": {}
+        },
+        {
+          "id": "notify-requestor-approved",
+          "type": "SendNotification",
+          "description": "Notify requestor that approval was granted; provisioning is in progress.",
+          "inputs": {
+            "to": [
+              {
+                "type": "Expression",
+                "value": "@{triggerBody().requestor.mail}"
+              }
+            ],
+            "subject": "Access request approved — provisioning in progress",
+            "body": "Your access request for @{triggerBody().resource.displayName} (role: @{triggerBody().payload.role}) has been approved by @{body('approval-task').approver.displayName}.\n\nFabric workspace access is being provisioned automatically. You will receive a follow-up notification once access is live.\n\nServiceNow Ticket: @{body('create-servicenow-ticket').ticket_id}"
+          },
+          "runAfter": {
+            "enqueue-provisioning-request": [
+              "Succeeded"
+            ]
+          }
+        }
+      ],
+      "ifFalse": [
+        {
+          "id": "update-ticket-rejected",
+          "type": "HttpConnector",
+          "description": "Update ServiceNow ticket status to rejected.",
+          "inputs": {
+            "method": "POST",
+            "uri": "{{SERVICENOW_URL}}/api/servicenow/ticket/reject",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": {
+              "request_id": "@{triggerBody().requestId}",
+              "ticket_id": "@{body('create-servicenow-ticket').ticket_id}",
+              "rejected_by": "@{body('approval-task').approver.mail}",
+              "rejected_at": "@{utcNow()}"
+            }
+          },
+          "runAfter": {}
+        },
+        {
+          "id": "notify-requestor-rejected",
+          "type": "SendNotification",
+          "description": "Notify requestor that the access request was denied.",
+          "inputs": {
+            "to": [
+              {
+                "type": "Expression",
+                "value": "@{triggerBody().requestor.mail}"
+              }
+            ],
+            "subject": "Access request denied — @{triggerBody().resource.displayName}",
+            "body": "Your access request for @{triggerBody().resource.displayName} (role: @{triggerBody().payload.role}) has been denied.\n\nReviewer: @{body('approval-task').approver.displayName}\nReason: @{body('approval-task').comments}\n\nServiceNow Ticket: @{body('create-servicenow-ticket').ticket_id}\n\nIf you believe this is in error, please contact your data steward."
+          },
+          "runAfter": {
+            "update-ticket-rejected": [
+              "Succeeded"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "wait-for-provisioning-callback",
+      "type": "WaitForExternalCallback",
+      "description": "Step 5 — Wait for the Fabric provisioner Azure Function to call back via the Purview Workflow API with the provisioning result.",
+      "inputs": {
+        "callbackUrl": "@{listCallbackUrl()}",
+        "timeoutInDays": 7
+      },
+      "runAfter": {
+        "check-approval-result": [
+          "Succeeded"
+        ]
+      }
+    },
+    {
+      "id": "send-final-notification",
+      "type": "SendNotification",
+      "description": "Step 6 — Send final notification to the requestor with the provisioning outcome.",
+      "inputs": {
+        "to": [
+          {
+            "type": "Expression",
+            "value": "@{triggerBody().requestor.mail}"
+          }
+        ],
+        "subject": "Fabric access provisioned — @{triggerBody().resource.displayName}",
+        "body": "Your Fabric workspace access has been provisioned successfully.\n\nResource: @{triggerBody().resource.displayName}\nWorkspace: @{triggerBody().resource.properties.workspaceName}\nRole: @{triggerBody().payload.role}\n\nProvisioning details: @{body('wait-for-provisioning-callback').message}\n\nYou can now access the workspace in Microsoft Fabric."
+      },
+      "runAfter": {
+        "wait-for-provisioning-callback": [
+          "Succeeded"
+        ]
+      }
+    }
+  ]
+}

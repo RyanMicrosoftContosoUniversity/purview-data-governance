@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "dev"
+    },
+    "purviewAccountName": {
+      "value": "<YOUR_PURVIEW_ACCOUNT_NAME>"
+    },
+    "fabricWorkspaceId": {
+      "value": "<YOUR_FABRIC_WORKSPACE_GUID>"
+    }
+  }
+}
