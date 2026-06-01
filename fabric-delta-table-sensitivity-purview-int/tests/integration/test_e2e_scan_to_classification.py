@@ -153,28 +153,29 @@ def _wait_for_scan(
     timeout_s: int,
     poll_s: int,
 ) -> str:
-    """Poll until status is terminal. Returns final status string."""
-    url = (
-        f"{scan_root}/datasources/{data_source}/scans/{scan_name}/runs/{run_id}"
+    """Poll until status is terminal. Returns final status string.
+
+    Uses the LIST runs endpoint (the GET-by-id form returns 400 on this
+    Unified Purview deployment) and filters for our runId.
+    """
+    list_url = (
+        f"{scan_root}/datasources/{data_source}/scans/{scan_name}/runs"
         f"?api-version=2023-09-01"
     )
     deadline = time.time() + timeout_s
     last_status = "unknown"
+    terminal = {"Succeeded", "Failed", "Canceled", "Cancelled", "PartialSucceeded"}
     while time.time() < deadline:
-        r = requests.get(url, headers=_atlas_headers(credential), timeout=30)
-        if r.status_code == 404:
-            logger.info("Scan run not yet visible (404), retrying...")
+        r = requests.get(list_url, headers=_atlas_headers(credential), timeout=30)
+        r.raise_for_status()
+        runs = r.json().get("value", [])
+        match = next((x for x in runs if x.get("id") == run_id), None)
+        if match is None:
+            logger.info("Scan run %s not yet visible in list, retrying...", run_id)
         else:
-            r.raise_for_status()
-            last_status = r.json().get("status", "unknown")
+            last_status = match.get("status", "unknown")
             logger.info("Scan run status: %s", last_status)
-            if last_status in (
-                "Succeeded",
-                "Failed",
-                "Canceled",
-                "Cancelled",
-                "PartialSucceeded",
-            ):
+            if last_status in terminal:
                 return last_status
         time.sleep(poll_s)
     pytest.fail(
